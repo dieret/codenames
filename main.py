@@ -45,6 +45,7 @@ class PlaygroundTile(object):
                 cls += "_none"
             else:
                 raise ValueError(cls)
+            return cls
 
     def to_html(self, viewer):
         return f'<a onclick="tileClicked({self.index})" id="tile{self.index}" class="tile {self.get_tile_class(viewer=viewer)}">{self.content}</a>'
