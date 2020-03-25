@@ -6,9 +6,10 @@ body {
 
 
 .tile {
-     background-color: #4CAF50; /* Green */
-  border: none;
-  color: white;
+  background-color: #FFD480; /* brown background */
+  border: 4px solid white; /* brown  border */
+  border-radius: 10px;
+  color: black; /* White text */
   padding: 15px 32px;
   text-align: center;
   text-decoration: none;
@@ -16,6 +17,13 @@ body {
   font-size: 16px;
 }
 
+.tile:hover {
+  background-color: #FFE6B3;
+}
+
 .clicked {
     background-color: #af3117;
+}
+.clicked:hover {
+    background-color: #ff4227;
 }
