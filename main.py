@@ -3,6 +3,7 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO
 import logging
+from typing import List
 
 
 app = Flask(__name__)
@@ -10,10 +11,58 @@ app.config['SECRET_KEY'] = 'vnkdjnfjknfl1232#'
 socketio = SocketIO(app)
 
 
+class PlaygroundTile(object):
+    def __init__(self, content: str, type: str, index):
+        #: HTML content to display?
+        self.content = content
+
+        self.index = index
+
+        #: blue, red, bomb
+        self.type = type
+
+        self.clicked_by = None
+
+    @property
+    def tile_class(self):
+        if self.clicked_by is None:
+            return "unclicked"
+        else:
+            return "clicked"
+
+    def to_html(self):
+        return f'<a onclick="tileClicked({self.index})" id="tile{self.index}" class="tile {self.tile_class}">{self.content}</a>'
+
+
+class PlayGround(object):
+    def __init__(self, tiles: List[PlaygroundTile]):
+        self.fields = tiles
+        self.ncols = 6
+
+    def to_html(self):
+        out = ""
+        for i, field in enumerate(self.fields):
+            if i > 0 and i % self.ncols == 0:
+                out += "<br/>"
+            out += field.to_html()
+        return out
+
+
+def generate_new_playground() -> PlayGround:
+    fields = []
+    for i in range(36):
+        fields.append(PlaygroundTile("word", "?", i))
+    return PlayGround(fields)
+
+
+playground = generate_new_playground()
+
+
 @app.route('/')
 def sessions():
     return render_template(
         'session.html',
+        playground=playground.to_html()
     )
 
 
@@ -31,17 +80,7 @@ def messages_to_html(messages):
 @socketio.on("user_connect")
 def handle_user_connect(json, ):
     app.logger.info("user connected: " + str(json))
-
-
-@socketio.on('chat_message_received')
-def handle_my_custom_event(json, methods=('GET', 'POST')):
-    app.logger.info('Received chat message: ' + str(json))
-    global messages
-    messages.append(json["message"])
-    return_json = {}
-    return_json["message"] = messages_to_html(messages)
-    socketio.emit('update_chat_messages', return_json, callback=messageReceived)
-
+    update_chat_messages()
 
 
 @socketio.on("login")
@@ -55,8 +94,37 @@ def handle_user_login_event(json):
     socketio.emit('user_login', return_json, callback=messageReceived)
 
 
-def update_coordinates():
-    socketio.emit('coordinate_update', {"coordinates": "asdf"}, callback=messageReceived)
+@socketio.on('chat_message_received')
+def handle_chat_message_received(json, methods=('GET', 'POST')):
+    app.logger.info('Received chat message: ' + str(json))
+    global messages
+    messages.append(json["message"])
+    update_chat_messages()
+
+
+def write_chat_message(message):
+    global messages
+    messages.append(message)
+    update_chat_messages()
+
+
+def update_chat_messages():
+    return_json = {}
+    return_json["message"] = messages_to_html(messages)
+    socketio.emit('update_chat_messages', return_json, callback=messageReceived)
+
+
+@socketio.on("tile_clicked")
+def handle_tile_clicked_event(json):
+    app.logger.info("Tile clicked: " + str(json))
+    playground.fields[json["index"]].clicked_by = json["user"]
+    write_chat_message(f"User {json['user']} has clicked on field with index {json['index']}")
+    update_playground()
+
+
+
+def update_playground():
+    socketio.emit('update_playground', {"playground_html": playground.to_html()}, callback=messageReceived)
 
 
 if __name__ == '__main__':

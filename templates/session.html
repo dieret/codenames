@@ -50,6 +50,10 @@
 
   /* Functions for reaction to clicks */
 
+  function tileClicked( index) {
+      console.debug(index);
+      socket.emit( "tile_clicked", {user: user, index: index} )
+  }
 
   /* Handling whatever is returned from the python backend */
 
@@ -58,6 +62,16 @@
     function( msg ) {
       if( typeof msg.message !== 'undefined' ) {
         $( 'div.message_holder' ).html(msg.message);
+      }
+    }
+  );
+
+  socket.on(
+    'update_playground',
+    function( data ) {
+      console.debug("Updating playground");
+      if( typeof data.playground_html !== 'undefined' ) {
+        $( 'div.playground' ).html(data.playground_html);
       }
     }
   );
@@ -117,4 +131,9 @@
   </form>
 </div>
 
+<div class="playground">
+  {{ playground|safe }}
+</div>
+
+</body>
 </html>
