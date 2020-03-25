@@ -78,7 +78,6 @@ playground = generate_new_playground()
 def sessions():
     return render_template(
         'session.html',
-        playground=playground.to_html()
     )
 
 
@@ -108,6 +107,7 @@ def handle_user_login_event(json):
     }
     app.logger.debug("Returning json: " + str(return_json))
     socketio.emit('user_login', return_json, callback=messageReceived)
+    update_playground()
 
 
 @socketio.on('chat_message_received')
