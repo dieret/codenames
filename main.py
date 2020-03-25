@@ -86,10 +86,9 @@ def update_chat_messages():
 def handle_tile_clicked_event(json):
     app.logger.info("Tile clicked: " + str(json))
     user = users[json["user"]]
-    field = playground.fields[json["index"]]
-    field.clicked_by = user.name
-    tile = playground.fields[json["index"]]
-    write_chat_message("system", f"User {user.name} (team {user.team}) has clicked on field '{field.content}'.")
+    tile = playground.tiles[json["index"]]
+    tile.clicked_by = user.name
+    write_chat_message("system", f"User {user.name} (team {user.team}) has clicked on field '{tile.content}'.")
     ask_all_sessions_to_request_playground_update()
 
 

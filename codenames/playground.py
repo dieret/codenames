@@ -49,12 +49,12 @@ class PlaygroundTile(object):
 
 class PlayGround(object):
     def __init__(self, tiles: List[PlaygroundTile]):
-        self.fields = tiles
+        self.tiles = tiles
         self.ncols = 6
 
     def to_html(self, viewer="player"):
         out = ""
-        for i, field in enumerate(self.fields):
+        for i, field in enumerate(self.tiles):
             if i > 0 and i % self.ncols == 0:
                 out += "<br/>"
             out += field.to_html(viewer=viewer)
