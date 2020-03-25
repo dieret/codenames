@@ -3,12 +3,35 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO
 import logging
-from typing import List
+from typing import List, Optional, Dict
 
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'vnkdjnfjknfl1232#'
 socketio = SocketIO(app)
+
+
+class User(object):
+    def __init__(self, name: str, team: str, role: str):
+        self.name = name
+        #: Team: 'red' or 'blue'
+        self.team = team
+        #: Role: 'guesser' or 'explainer'
+        self.role = role
+
+
+class Users(object):
+    def __init__(self):
+        self._username2user = {}  # type: Dict[str, User]
+
+    def add_user(self, user: User):
+        self._username2user[user.name] = user
+
+    def __getitem__(self, item: str):
+        return self._username2user[item]
+
+
+users = Users()
 
 
 class PlaygroundTile(object):
@@ -24,7 +47,7 @@ class PlaygroundTile(object):
         self.clicked_by = None
 
     def get_tile_class(self, viewer):
-        if viewer == "player":
+        if viewer == "guesser":
             # todo: must be clicked-wrong/right
             if self.clicked_by is None:
                 return "unclicked"
@@ -86,11 +109,29 @@ def messageReceived(methods=('GET', 'POST')):
     print('message was received!!!')
 
 
-messages = []
+
+class Message(object):
+    def __init__(self, user: str, message: str):
+        self.user = user
+        self.message = message
+
+    def to_html(self):
+        return f"{self.user}: {self.message}"
 
 
-def messages_to_html(messages):
-    return "<br/>".join(messages)
+class Messages(object):
+    def __init__(self):
+        self.messages = []  # type: List[Message]
+
+    def add_message(self, message: Message):
+        self.messages.append(message)
+
+    def to_html(self):
+        return "<br/>".join([m.to_html() for m in self.messages])
+
+messages = Messages()
+
+
 
 
 @socketio.on("user_connect")
@@ -115,25 +156,29 @@ def handle_user_login_event(json):
     }
     app.logger.debug("Returning json: " + str(return_json))
     socketio.emit('user_login', return_json, callback=messageReceived)
+    if success:
+        write_chat_message("system", f"User {json['user']} has joined team {json['team']} as {json['role']}.")
+        users.add_user(User(json["user"], team=json["team"], role=json["role"]))
 
 
 @socketio.on('chat_message_received')
 def handle_chat_message_received(json, methods=('GET', 'POST')):
     app.logger.info('Received chat message: ' + str(json))
-    global messages
-    messages.append(json["message"])
-    update_chat_messages()
+    if json["user"].strip() and json["message"].strip():
+        global messages
+        messages.add_message(Message(json["user"], json["message"]))
+        update_chat_messages()
 
 
-def write_chat_message(message):
+def write_chat_message(user, message):
     global messages
-    messages.append(message)
+    messages.add_message(Message(user, message))
     update_chat_messages()
 
 
 def update_chat_messages():
     return_json = {}
-    return_json["message"] = messages_to_html(messages)
+    return_json["message"] = messages.to_html()
     socketio.emit('update_chat_messages', return_json, callback=messageReceived)
 
 
@@ -141,7 +186,7 @@ def update_chat_messages():
 def handle_tile_clicked_event(json):
     app.logger.info("Tile clicked: " + str(json))
     playground.fields[json["index"]].clicked_by = json["user"]
-    write_chat_message(f"User {json['user']} has clicked on field with index {json['index']}")
+    write_chat_message("system", f"User {json['user']} has clicked on field with index {json['index']}")
     update_playground()
 
 
@@ -149,7 +194,11 @@ def handle_tile_clicked_event(json):
 def update_playground(json=None):
     if json is None:
         json = {}
-    socketio.emit('update_playground', {"playground_html": playground.to_html()}, callback=messageReceived)
+    if "user" in json:
+        role = users[json["user"]].role
+    else:
+        role = None
+    socketio.emit('update_playground', {"playground_html": playground.to_html(viewer=role)}, callback=messageReceived)
 
 
 if __name__ == '__main__':
