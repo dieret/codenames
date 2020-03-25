@@ -44,7 +44,13 @@ class PlaygroundTile(object):
             raise ValueError
 
     def to_html(self, viewer):
-        return f'<a onclick="tileClicked({self.index})" id="tile{self.index}" class="tile {self.get_tile_class(viewer=viewer)}">{self.content}</a>'
+        attributes = [
+            f'id="tile{self.index}"',
+            f'class="tile {self.get_tile_class(viewer=viewer)}"',
+        ]
+        if self.clicked_by is None:
+            attributes.append(f'onclick="tileClicked({self.index})"')
+        return f'<a {" ".join(attributes)} >{self.content}</a>'
 
 
 class PlayGround(object):
