@@ -1,0 +1,146 @@
+{#<script src="{{ url_for('static', filename='js/fos.min.js') }}"></script>#}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
+<link href='https://fonts.googleapis.com/css?family=Orbitron' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+
+<script type="text/javascript">
+  var socket = io.connect('http://' + document.domain + ':' + location.port);
+  var user = "invalid";
+
+  socket.on(
+    'connect',
+    function() {
+      socket.emit( 'my event', {data: 'User Connected'} );
+
+      /* Setting up events for the forms etc. of the page */
+      $( 'form' ).on(
+        'submit',
+        function( e ) {
+          e.preventDefault();
+          let user_input = $( 'input.message' ).val();
+          socket.emit(
+            'my event',
+            {
+                message : user_input,
+                user : user
+            }
+          );
+          $( 'input.message' ).val( '' ).focus();
+        }
+      );
+
+      $( '#login' ).on(
+          'submit',
+          function( e ) {
+              e.preventDefault();
+              let user_input = $( 'input.user' ).val();
+              socket.emit( 'login', {user : user_input});
+          }
+      );
+
+    }
+  );
+
+  /* Functions for reaction to clicks */
+
+  function navigation_clicked(direction) {
+      socket.emit(
+          'navigation_event',
+          {
+              direction : direction,
+              user : user,
+          }
+      );
+  }
+
+  /* Handling whatever is returned from the python backend */
+
+  socket.on(
+    'my response',
+    function( msg ) {
+      if( typeof msg.message !== 'undefined' ) {
+        $( 'h3' ).remove();
+        $( 'div.message_holder' ).html(msg.message);
+      }
+    }
+  );
+
+  socket.on(
+    'coordinate_update',
+    function( msg ){
+        console.log("Updating coordinates");
+        if( typeof msg.coordinates !== 'undefined' ) {
+            $( '#coordinates' ).html(msg.coordinates)
+        }
+    }
+  );
+
+  socket.on(
+      'user_login',
+      function ( msg ){
+          console.log("User logged in");
+          console.log(msg.user);
+          console.log(msg.success);
+          if ( msg.success === true ){
+            console.log("success");
+            // $( '#login' ).remove();
+            $( '#login_message' ).html(
+                `Welcome ${msg.user}`
+            );
+            user = msg.user;
+
+            let nav_left = $( '#navigation_left' );
+            nav_left.removeClass("inactive");
+            nav_left.addClass(msg.left);
+
+            let nav_right = $( '#navigation_right' );
+            nav_right.removeClass("inactive");
+            nav_right.addClass(msg.right);
+
+            let nav_up = $( '#navigation_up' );
+            nav_up.removeClass("inactive");
+            nav_up.addClass(msg.up);
+
+            let nav_down = $( '#navigation_down' );
+            nav_down.removeClass("inactive");
+            nav_down.addClass(msg.down);
+
+          }
+          else {
+              console.log("failure");
+              $( '#login_message' ).html(
+                  `Login failed. Try again.`
+              )
+          }
+
+      }
+  );
+
+
+</script>
+
+<html>
+<body>
+
+<div class="login">
+  <form action="" method="POST" id="login">
+    <input type="text" class="user"/>
+    <input type="submit"/>
+  </form>
+  <div id="login_message">Please login</div>
+</div>
+</body>
+
+
+<div class="chat">
+  <h3 style='color: #ccc;font-size: 30px;'>No message yet..</h3>
+  <div class="message_holder">Teset</div>
+
+  <form action="" method="POST">
+    <input type="text" class="message" placeholder="Messages"/>
+    <input type="submit"/>
+  </form>
+</div>
+
+</html>
