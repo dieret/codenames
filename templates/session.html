@@ -108,6 +108,7 @@
             );
             user = msg.user;
             socket.emit("request_update_playground", {user: user});
+            set_disabled_login(true)
           }
           else {
               console.log("failure");
@@ -119,6 +120,16 @@
       }
   );
 
+  function set_disabled_login( state ){
+      console.debug("disabling");
+      $("#radio_team_red").prop("disabled", state);
+      $("#radio_team_blue").prop("disabled", state);
+      $("#radio_role_explainer").prop("disabled", state);
+      $("#radio_role_guesser").prop("disabled", state);
+      $("#user_input").prop("disabled", state);
+      $("#user_login").prop("disabled", state);
+  }
+
 
 </script>
 </head>
@@ -128,7 +139,7 @@
 <div class="container login">
   <form action="" method="POST" id="login">
     <div class="form-group">
-      <input type="text" class="user" class="form-control" placeholder="Your name" value="test"/>
+      <input id="user_input" type="text" class="user" class="form-control" placeholder="Your name" value="test"/>
 
       <fieldset>
         <input type="radio" id="radio_team_red" name="radio_team" value="red" checked="checked">
@@ -144,7 +155,7 @@
         <label for="radio_role_guesser"> Guesser</label>
       </fieldset>
 
-      <button type="submit" class="btn btn-success">Login</button>
+      <button id="login_button" type="submit" class="btn btn-success">Login</button>
     </div>
   </form>
   <div id="login_message">Please login</div>
