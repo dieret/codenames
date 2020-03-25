@@ -100,14 +100,20 @@ def handle_user_connect(json, ):
 
 @socketio.on("login")
 def handle_user_login_event(json):
-    app.logger.info("User logged in: ", json)
+    app.logger.info("User logged in: " + str(json))
+    success = True
+    if not json["user"]:
+        success = False
+    if not "team" in json or not json["team"]:
+        success = False
+    if not "role" in json or not json["role"]:
+        success = False
     return_json = {
         "user": json["user"],
-        "success": True
+        "success": success
     }
     app.logger.debug("Returning json: " + str(return_json))
     socketio.emit('user_login', return_json, callback=messageReceived)
-    update_playground()
 
 
 @socketio.on('chat_message_received')
@@ -138,8 +144,10 @@ def handle_tile_clicked_event(json):
     update_playground()
 
 
-
-def update_playground():
+@socketio.on("request_update_playground")
+def update_playground(json=None):
+    if json is None:
+        json = {}
     socketio.emit('update_playground', {"playground_html": playground.to_html()}, callback=messageReceived)
 
 
