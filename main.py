@@ -1,10 +1,16 @@
 #!/usr/bin/env python3
 
+# std
+import logging
+
+# 3rd
 from flask import Flask, render_template
 from flask_socketio import SocketIO
-import logging
-from typing import List, Optional, Dict
-import random
+
+# ours
+from codenames.users import Users, User
+from codenames.messages import Messages, Message
+from codenames.playground import generate_new_playground
 
 
 app = Flask(__name__)
@@ -12,93 +18,9 @@ app.config['SECRET_KEY'] = 'vnkdjnfjknfl1232#'
 socketio = SocketIO(app)
 
 
-class User(object):
-    def __init__(self, name: str, team: str, role: str):
-        self.name = name
-        #: Team: 'red' or 'blue'
-        self.team = team
-        #: Role: 'guesser' or 'explainer'
-        self.role = role
-
-
-class Users(object):
-    def __init__(self):
-        self._username2user = {}  # type: Dict[str, User]
-
-    def add_user(self, user: User):
-        self._username2user[user.name] = user
-
-    def __getitem__(self, item: str):
-        return self._username2user[item]
-
-
 users = Users()
-
-
-class PlaygroundTile(object):
-    def __init__(self, content: str, type: str, index):
-        #: HTML content to display?
-        self.content = content
-
-        self.index = index
-
-        #: blue, red, bomb, none
-        self.type = type
-
-        self.clicked_by = None
-
-    def get_tile_class(self, viewer):
-        if viewer == "guesser":
-            # todo: must be clicked-wrong/right
-            if self.clicked_by is None:
-                return "unclicked"
-            else:
-                return "clicked"
-        elif viewer == "explainer":
-            if self.clicked_by is None:
-                cls = "unclicked"
-            else:
-                cls = "clicked"
-            if self.type == "blue":
-                cls += "_blue"
-            elif self.type == "red":
-                cls += "_red"
-            elif self.type == "bomb":
-                cls += "_bomb"
-            elif self.type == "none":
-                cls += "_none"
-            else:
-                raise ValueError(f"Invalid type {self.type}")
-            return cls
-        else:
-            raise ValueError
-
-    def to_html(self, viewer):
-        return f'<a onclick="tileClicked({self.index})" id="tile{self.index}" class="tile {self.get_tile_class(viewer=viewer)}">{self.content}</a>'
-
-
-class PlayGround(object):
-    def __init__(self, tiles: List[PlaygroundTile]):
-        self.fields = tiles
-        self.ncols = 6
-
-    def to_html(self, viewer="player"):
-        out = ""
-        for i, field in enumerate(self.fields):
-            if i > 0 and i % self.ncols == 0:
-                out += "<br/>"
-            out += field.to_html(viewer=viewer)
-        return out
-
-
-def generate_new_playground() -> PlayGround:
-    fields = []
-    for i in range(36):
-        fields.append(PlaygroundTile("word", random.choice(["red", "blue", "bomb", "none"]), i))
-    return PlayGround(fields)
-
-
 playground = generate_new_playground()
+messages = Messages()
 
 
 @app.route('/')
@@ -110,32 +32,6 @@ def sessions():
 
 def messageReceived(methods=('GET', 'POST')):
     print('message was received!!!')
-
-
-
-class Message(object):
-    def __init__(self, user: str, message: str):
-        self.user = user
-        self.message = message
-
-    def to_html(self):
-        return f"{self.user}: {self.message}"
-
-
-class Messages(object):
-    def __init__(self):
-        self.messages = []  # type: List[Message]
-
-    def add_message(self, message: Message):
-        self.messages.append(message)
-
-    def to_html(self):
-        return "<br/>".join([m.to_html() for m in self.messages])
-
-
-messages = Messages()
-
-
 
 
 @socketio.on("user_connect")
@@ -219,7 +115,4 @@ if __name__ == '__main__':
     handler.setLevel(logging.DEBUG)
     app.logger.addHandler(handler)
 
-    # NOTE: Deactive debug mode because it calls everything twice
-    # https://stackoverflow.com/questions/49524270/
-    # rt = RepeatedTimer(300, db.save, "backup.pickle")
     socketio.run(app, debug=True)
