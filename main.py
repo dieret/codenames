@@ -1,9 +1,16 @@
 #!/usr/bin/env python3
 
+# std
+import logging
+
+# 3rd
 from flask import Flask, render_template
 from flask_socketio import SocketIO
-import logging
-from typing import List
+
+# ours
+from codenames.users import Users, User
+from codenames.messages import Messages, Message
+from codenames.playground import generate_new_playground
 
 
 app = Flask(__name__)
@@ -11,68 +18,9 @@ app.config['SECRET_KEY'] = 'vnkdjnfjknfl1232#'
 socketio = SocketIO(app)
 
 
-class PlaygroundTile(object):
-    def __init__(self, content: str, type: str, index):
-        #: HTML content to display?
-        self.content = content
-
-        self.index = index
-
-        #: blue, red, bomb, none
-        self.type = type
-
-        self.clicked_by = None
-
-    def get_tile_class(self, viewer):
-        if viewer == "player":
-            # todo: must be clicked-wrong/right
-            if self.clicked_by is None:
-                return "unclicked"
-            else:
-                return "clicked"
-        elif viewer == "explainer":
-            if self.clicked_by is None:
-                cls = "unclicked"
-            else:
-                cls = "clicked"
-            if self.type == "blue":
-                cls += "_blue"
-            elif self.type == "red":
-                cls += "_red"
-            elif self.type == "bomb":
-                cls += "_bomb"
-            elif self.type == "none":
-                cls += "_none"
-            else:
-                raise ValueError(cls)
-            return cls
-
-    def to_html(self, viewer):
-        return f'<a onclick="tileClicked({self.index})" id="tile{self.index}" class="tile {self.get_tile_class(viewer=viewer)}">{self.content}</a>'
-
-
-class PlayGround(object):
-    def __init__(self, tiles: List[PlaygroundTile]):
-        self.fields = tiles
-        self.ncols = 6
-
-    def to_html(self, viewer="player"):
-        out = ""
-        for i, field in enumerate(self.fields):
-            if i > 0 and i % self.ncols == 0:
-                out += "<br/>"
-            out += field.to_html(viewer=viewer)
-        return out
-
-
-def generate_new_playground() -> PlayGround:
-    fields = []
-    for i in range(36):
-        fields.append(PlaygroundTile("word", "?", i))
-    return PlayGround(fields)
-
-
+users = Users()
 playground = generate_new_playground()
+messages = Messages()
 
 
 @app.route('/')
@@ -86,13 +34,6 @@ def messageReceived(methods=('GET', 'POST')):
     print('message was received!!!')
 
 
-messages = []
-
-
-def messages_to_html(messages):
-    return "<br/>".join(messages)
-
-
 @socketio.on("user_connect")
 def handle_user_connect(json, ):
     app.logger.info("user connected: " + str(json))
@@ -101,47 +42,70 @@ def handle_user_connect(json, ):
 
 @socketio.on("login")
 def handle_user_login_event(json):
-    app.logger.info("User logged in: ", json)
+    app.logger.info("User logged in: " + str(json))
+    success = True
+    if not json["user"]:
+        success = False
+    if not "team" in json or not json["team"]:
+        success = False
+    if not "role" in json or not json["role"]:
+        success = False
     return_json = {
         "user": json["user"],
-        "success": True
+        "success": success
     }
     app.logger.debug("Returning json: " + str(return_json))
     socketio.emit('user_login', return_json, callback=messageReceived)
-    update_playground()
+    if success:
+        write_chat_message("system", f"User {json['user']} has joined team {json['team']} as {json['role']}.")
+        users.add_user(User(json["user"], team=json["team"], role=json["role"]))
 
 
 @socketio.on('chat_message_received')
 def handle_chat_message_received(json, methods=('GET', 'POST')):
     app.logger.info('Received chat message: ' + str(json))
-    global messages
-    messages.append(json["message"])
-    update_chat_messages()
+    if json["user"].strip() and json["message"].strip():
+        global messages
+        messages.add_message(Message(json["user"], json["message"]))
+        update_chat_messages()
 
 
-def write_chat_message(message):
+def write_chat_message(user, message):
     global messages
-    messages.append(message)
+    messages.add_message(Message(user, message))
     update_chat_messages()
 
 
 def update_chat_messages():
     return_json = {}
-    return_json["message"] = messages_to_html(messages)
+    return_json["message"] = messages.to_html()
     socketio.emit('update_chat_messages', return_json, callback=messageReceived)
 
 
 @socketio.on("tile_clicked")
 def handle_tile_clicked_event(json):
     app.logger.info("Tile clicked: " + str(json))
-    playground.fields[json["index"]].clicked_by = json["user"]
-    write_chat_message(f"User {json['user']} has clicked on field with index {json['index']}")
-    update_playground()
+    user = users[json["user"]]
+    tile = playground.tiles[json["index"]]
+    tile.clicked_by = user.name
+    write_chat_message("system", f"User {user.name} (team {user.team}) has clicked on field '{tile.content}'.")
+    ask_all_sessions_to_request_playground_update()
 
 
+@socketio.on("request_update_playground")
+def update_playground(json=None):
+    """ Should not be called from backend!!!  Rather use ask_all_sessions_to_request_playground_update"""
+    if json is None:
+        json = {}
+    if "user" in json:
+        role = users[json["user"]].role
+    else:
+        role = None
+    socketio.emit('update_playground', {"playground_html": playground.to_html(viewer=role)}, callback=messageReceived)
 
-def update_playground():
-    socketio.emit('update_playground', {"playground_html": playground.to_html()}, callback=messageReceived)
+
+def ask_all_sessions_to_request_playground_update():
+    socketio.emit("ask_all_sessions_to_request_update_playground")
 
 
 if __name__ == '__main__':
@@ -150,7 +114,4 @@ if __name__ == '__main__':
     handler.setLevel(logging.DEBUG)
     app.logger.addHandler(handler)
 
-    # NOTE: Deactive debug mode because it calls everything twice
-    # https://stackoverflow.com/questions/49524270/
-    # rt = RepeatedTimer(300, db.save, "backup.pickle")
     socketio.run(app, debug=True)

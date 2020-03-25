@@ -29,7 +29,7 @@
             'chat_message_received',
             {
                 message : user_input,
-                user : user
+                user : user,
             }
           );
           $( 'input.message' ).val( '' ).focus();
@@ -41,7 +41,17 @@
           function( e ) {
               e.preventDefault();
               let user_input = $( 'input.user' ).val();
-              socket.emit( 'login', {user : user_input});
+              let team = $('input[name=radio_team]:checked', '#login').val();
+              let role = $('input[name=radio_role]:checked', '#login').val();
+              console.debug(team);
+              socket.emit(
+                  'login',
+                  {
+                      user : user_input,
+                      team: team,
+                      role: role
+                  }
+                );
           }
       );
 
@@ -67,6 +77,14 @@
   );
 
   socket.on(
+      "ask_all_sessions_to_request_update_playground",
+      function (msg) {
+          console.debug("Requeseting playground update");
+          socket.emit ("request_update_playground", {user: user})
+      }
+  );
+
+  socket.on(
     'update_playground',
     function( data ) {
       console.debug("Updating playground");
@@ -89,7 +107,7 @@
                 `Welcome ${msg.user}`
             );
             user = msg.user;
-
+            socket.emit("request_update_playground", {user: user});
           }
           else {
               console.log("failure");
@@ -112,7 +130,22 @@
 <div class="container login">
   <form action="" method="POST" id="login">
     <div class="form-group">
-      <input type="text" class="user" class="form-control" placeholder="Your name"/>
+      <input type="text" class="user" class="form-control" placeholder="Your name" value="test"/>
+
+      <fieldset>
+        <input type="radio" id="radio_team_red" name="radio_team" value="red" checked="checked">
+        <label for="radio_team_red"> Team red</label>
+        <input type="radio" id="radio_team_blue" name="radio_team" value="blue">
+        <label for="radio_team_blue"> Team blue</label>
+      </fieldset>
+
+      <fieldset>
+        <input type="radio" id="radio_role_explainer" name="radio_role" value="explainer">
+        <label for="radio_role_explainer"> Explainer</label>
+        <input type="radio" id="radio_role_guesser" name="radio_role" value="guesser" checked="checked">
+        <label for="radio_role_guesser"> Guesser</label>
+      </fieldset>
+
       <button type="submit" class="btn btn-success">Login</button>
     </div>
   </form>
