@@ -4,6 +4,7 @@ from flask import Flask, render_template
 from flask_socketio import SocketIO
 import logging
 from typing import List, Optional, Dict
+import random
 
 
 app = Flask(__name__)
@@ -67,8 +68,10 @@ class PlaygroundTile(object):
             elif self.type == "none":
                 cls += "_none"
             else:
-                raise ValueError(cls)
+                raise ValueError(f"Invalid type {self.type}")
             return cls
+        else:
+            raise ValueError
 
     def to_html(self, viewer):
         return f'<a onclick="tileClicked({self.index})" id="tile{self.index}" class="tile {self.get_tile_class(viewer=viewer)}">{self.content}</a>'
@@ -91,7 +94,7 @@ class PlayGround(object):
 def generate_new_playground() -> PlayGround:
     fields = []
     for i in range(36):
-        fields.append(PlaygroundTile("word", "?", i))
+        fields.append(PlaygroundTile("word", random.choice(["red", "blue", "bomb", "none"]), i))
     return PlayGround(fields)
 
 
@@ -128,6 +131,7 @@ class Messages(object):
 
     def to_html(self):
         return "<br/>".join([m.to_html() for m in self.messages])
+
 
 messages = Messages()
 
@@ -187,11 +191,12 @@ def handle_tile_clicked_event(json):
     app.logger.info("Tile clicked: " + str(json))
     playground.fields[json["index"]].clicked_by = json["user"]
     write_chat_message("system", f"User {json['user']} has clicked on field with index {json['index']}")
-    update_playground()
+    ask_all_sessions_to_request_playground_update()
 
 
 @socketio.on("request_update_playground")
 def update_playground(json=None):
+    """ Should not be called from backend!!!  Rather use ask_all_sessions_to_request_playground_update"""
     if json is None:
         json = {}
     if "user" in json:
@@ -199,6 +204,10 @@ def update_playground(json=None):
     else:
         role = None
     socketio.emit('update_playground', {"playground_html": playground.to_html(viewer=role)}, callback=messageReceived)
+
+
+def ask_all_sessions_to_request_playground_update():
+    socketio.emit("ask_all_sessions_to_request_update_playground")
 
 
 if __name__ == '__main__':

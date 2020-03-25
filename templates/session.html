@@ -77,6 +77,14 @@
   );
 
   socket.on(
+      "ask_all_sessions_to_request_update_playground",
+      function (msg) {
+          console.debug("Requeseting playground update");
+          socket.emit ("request_update_playground", {user: user})
+      }
+  );
+
+  socket.on(
     'update_playground',
     function( data ) {
       console.debug("Updating playground");
