@@ -1,8 +1,14 @@
+<html>
+<title>Mathegruppen Codenames</title>
+<head>
 {#<script src="{{ url_for('static', filename='js/fos.min.js') }}"></script>#}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
 <link href='https://fonts.googleapis.com/css?family=Orbitron' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <script type="text/javascript">
   var socket = io.connect('http://' + document.domain + ':' + location.port);
@@ -11,7 +17,7 @@
   socket.on(
     'connect',
     function() {
-      socket.emit( 'my event', {data: 'User Connected'} );
+      socket.emit( 'user_connect', {data: 'User Connected'} );
 
       /* Setting up events for the forms etc. of the page */
       $( 'form' ).on(
@@ -20,7 +26,7 @@
           e.preventDefault();
           let user_input = $( 'input.message' ).val();
           socket.emit(
-            'my event',
+            'chat_message_received',
             {
                 message : user_input,
                 user : user
@@ -44,35 +50,15 @@
 
   /* Functions for reaction to clicks */
 
-  function navigation_clicked(direction) {
-      socket.emit(
-          'navigation_event',
-          {
-              direction : direction,
-              user : user,
-          }
-      );
-  }
 
   /* Handling whatever is returned from the python backend */
 
   socket.on(
-    'my response',
+    'update_chat_messages',
     function( msg ) {
       if( typeof msg.message !== 'undefined' ) {
-        $( 'h3' ).remove();
         $( 'div.message_holder' ).html(msg.message);
       }
-    }
-  );
-
-  socket.on(
-    'coordinate_update',
-    function( msg ){
-        console.log("Updating coordinates");
-        if( typeof msg.coordinates !== 'undefined' ) {
-            $( '#coordinates' ).html(msg.coordinates)
-        }
     }
   );
 
@@ -90,22 +76,6 @@
             );
             user = msg.user;
 
-            let nav_left = $( '#navigation_left' );
-            nav_left.removeClass("inactive");
-            nav_left.addClass(msg.left);
-
-            let nav_right = $( '#navigation_right' );
-            nav_right.removeClass("inactive");
-            nav_right.addClass(msg.right);
-
-            let nav_up = $( '#navigation_up' );
-            nav_up.removeClass("inactive");
-            nav_up.addClass(msg.up);
-
-            let nav_down = $( '#navigation_down' );
-            nav_down.removeClass("inactive");
-            nav_down.addClass(msg.down);
-
           }
           else {
               console.log("failure");
@@ -119,27 +89,31 @@
 
 
 </script>
+</head>
 
-<html>
 <body>
 
-<div class="login">
+<div class="container login">
   <form action="" method="POST" id="login">
-    <input type="text" class="user"/>
-    <input type="submit"/>
+    <div class="form-group">
+      <input type="text" class="user" class="form-control" placeholder="Your name"/>
+      <button type="submit" class="btn btn-success">Login</button>
+    </div>
   </form>
   <div id="login_message">Please login</div>
 </div>
-</body>
 
 
-<div class="chat">
-  <h3 style='color: #ccc;font-size: 30px;'>No message yet..</h3>
-  <div class="message_holder">Teset</div>
+<div class="container chat">
+  <div class="message_holder">
+    No message yet..
+  </div>
 
   <form action="" method="POST">
-    <input type="text" class="message" placeholder="Messages"/>
-    <input type="submit"/>
+    <div class="form-group">
+      <input type="text" class="message" class="form-control" placeholder="Your message"/>
+      <button type="submit" class="btn btn-success">Submit</button>
+    </div>
   </form>
 </div>
 

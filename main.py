@@ -2,6 +2,7 @@
 
 from flask import Flask, render_template
 from flask_socketio import SocketIO
+import logging
 
 
 app = Flask(__name__)
@@ -27,33 +28,30 @@ def messages_to_html(messages):
     return "<br/>".join(messages)
 
 
-@socketio.on('my event')
+@socketio.on("user_connect")
+def handle_user_connect(json, ):
+    app.logger.info("user connected: " + str(json))
+
+
+@socketio.on('chat_message_received')
 def handle_my_custom_event(json, methods=('GET', 'POST')):
-    print('received my event: ' + str(json))
-    print(json)
-    return_json = json.copy()
+    app.logger.info('Received chat message: ' + str(json))
     global messages
     messages.append(json["message"])
+    return_json = {}
     return_json["message"] = messages_to_html(messages)
-    print("m", return_json["message"])
-    socketio.emit('my response', return_json, callback=messageReceived)
+    socketio.emit('update_chat_messages', return_json, callback=messageReceived)
 
-
-@socketio.on("navigation_event")
-def handle_navigation_event(json):
-    print(str(json))
-    direction = json["direction"]
-    update_coordinates()
 
 
 @socketio.on("login")
 def handle_user_login_event(json):
-    print(str(json))
+    app.logger.info("User logged in: ", json)
     return_json = {
         "user": json["user"],
         "success": True
     }
-    print(return_json)
+    app.logger.debug("Returning json: " + str(return_json))
     socketio.emit('user_login', return_json, callback=messageReceived)
 
 
@@ -62,6 +60,11 @@ def update_coordinates():
 
 
 if __name__ == '__main__':
+    app.logger.setLevel(logging.DEBUG)
+    handler = logging.StreamHandler()
+    handler.setLevel(logging.DEBUG)
+    app.logger.addHandler(handler)
+
     # NOTE: Deactive debug mode because it calls everything twice
     # https://stackoverflow.com/questions/49524270/
     # rt = RepeatedTimer(300, db.save, "backup.pickle")
