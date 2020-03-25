@@ -21,22 +21,31 @@ class PlaygroundTile(object):
         if viewer == "guesser":
             # todo: must be clicked-wrong/right
             if self.clicked_by is None:
-                return "unclicked"
+                return "guesser unclicked"
             else:
-                return "clicked"
+                cls = "guesser clicked"
+                if self.type == "blue":
+                    cls += " blue"
+                elif self.type == "red":
+                    cls += " red"
+                elif self.type == "bomb":
+                    cls += " bomb"
+                elif self.type == "none":
+                    cls += " none"
+                return cls
         elif viewer == "explainer":
             if self.clicked_by is None:
-                cls = "unclicked"
+                cls = "explainer unclicked"
             else:
-                cls = "clicked"
+                cls = "explainer clicked"
             if self.type == "blue":
-                cls += "_blue"
+                cls += " blue"
             elif self.type == "red":
-                cls += "_red"
+                cls += " red"
             elif self.type == "bomb":
-                cls += "_bomb"
+                cls += " bomb"
             elif self.type == "none":
-                cls += "_none"
+                cls += " none"
             else:
                 raise ValueError(f"Invalid type {self.type}")
             return cls

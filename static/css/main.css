@@ -17,13 +17,53 @@ body {
   font-size: 16px;
 }
 
-.tile:hover {
+
+.unclicked:hover {
   background-color: #FFE6B3;
 }
 
-.clicked {
+.clicked.red {
     background-color: #af3117;
+    cursor: default;
 }
-.clicked:hover {
+.clicked:hover.red {
     background-color: #ff4227;
 }
+
+.clicked.blue {
+    background-color: #0042af;
+    cursor: default;
+}
+.clicked:hover.blue {
+    background-color: #00b9ff;
+}
+
+.clicked.bomb {
+    background-color: #000000;
+    cursor: default;
+}
+.clicked:hover.bomb {
+    background-color: #757575;
+}
+
+.unclicked.explainer {
+    cursor: default;
+}
+
+.unclicked.guesser {
+    cursor: pointer;
+}
+
+/*
+Kombinations:
+
+Guesser:
+clickable
+correctly clicked by blue/red
+incorrectly clicked by blue/red (but not bomb)
+incorrectly clicked bomb
+
+Explainer also has:
+clickable blue/red
+clickable bomb
+*/
