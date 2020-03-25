@@ -18,20 +18,36 @@ class PlaygroundTile(object):
 
         self.index = index
 
-        #: blue, red, bomb
+        #: blue, red, bomb, none
         self.type = type
 
         self.clicked_by = None
 
-    @property
-    def tile_class(self):
-        if self.clicked_by is None:
-            return "unclicked"
-        else:
-            return "clicked"
+    def get_tile_class(self, viewer):
+        if viewer == "player":
+            # todo: must be clicked-wrong/right
+            if self.clicked_by is None:
+                return "unclicked"
+            else:
+                return "clicked"
+        elif viewer == "explainer":
+            if self.clicked_by is None:
+                cls = "unclicked"
+            else:
+                cls = "clicked"
+            if self.type == "blue":
+                cls += "_blue"
+            elif self.type == "red":
+                cls += "_red"
+            elif self.type == "bomb":
+                cls += "_bomb"
+            elif self.type == "none":
+                cls += "_none"
+            else:
+                raise ValueError(cls)
 
-    def to_html(self):
-        return f'<a onclick="tileClicked({self.index})" id="tile{self.index}" class="tile {self.tile_class}">{self.content}</a>'
+    def to_html(self, viewer):
+        return f'<a onclick="tileClicked({self.index})" id="tile{self.index}" class="tile {self.get_tile_class(viewer=viewer)}">{self.content}</a>'
 
 
 class PlayGround(object):
@@ -39,12 +55,12 @@ class PlayGround(object):
         self.fields = tiles
         self.ncols = 6
 
-    def to_html(self):
+    def to_html(self, viewer="player"):
         out = ""
         for i, field in enumerate(self.fields):
             if i > 0 and i % self.ncols == 0:
                 out += "<br/>"
-            out += field.to_html()
+            out += field.to_html(viewer=viewer)
         return out
 
 
