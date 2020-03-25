@@ -189,8 +189,11 @@ def update_chat_messages():
 @socketio.on("tile_clicked")
 def handle_tile_clicked_event(json):
     app.logger.info("Tile clicked: " + str(json))
-    playground.fields[json["index"]].clicked_by = json["user"]
-    write_chat_message("system", f"User {json['user']} has clicked on field with index {json['index']}")
+    user = users[json["user"]]
+    field = playground.fields[json["index"]]
+    field.clicked_by = user.name
+    tile = playground.fields[json["index"]]
+    write_chat_message("system", f"User {user.name} (team {user.team}) has clicked on field '{field.content}'.")
     ask_all_sessions_to_request_playground_update()
 
 
