@@ -3,6 +3,7 @@
 # std
 import logging
 import random
+from typing import Optional, Union
 
 # 3rd
 from flask import Flask, render_template
@@ -67,7 +68,7 @@ def handle_user_login_event(json):
     if success:
         msg = f"User {json['user']} has joined team {json['team']} as " \
               f"{json['role']}."
-        write_chat_message("system", msg)
+        write_chat_message(msg)
         users.add_user(User(json["user"], team=json["team"], role=json["role"]))
 
 
@@ -78,15 +79,15 @@ def handle_chat_message_received(json, methods=('GET', 'POST')):
     history in all clients."""
     app.logger.info('Received chat message: ' + str(json))
     if json["user"].strip() and json["message"].strip():
-        global messages
-        messages.add_message(Message(json["user"], json["message"]))
-        update_chat_messages()
+        write_chat_message(json["message"], user=json["user"])
 
 
-def write_chat_message(user: str, message: str) -> None:
+def write_chat_message(message: str, user: Optional[Union[str, User]] = None) -> None:
     """ Write a chat message to everyone. """
-    global messages
-    messages.add_message(Message(user, message))
+    if isinstance(user, str):
+        user = users[user]
+    print("write", user)
+    messages.add_message(Message(message, user=user))
     update_chat_messages()
 
 
@@ -131,12 +132,12 @@ def handle_tile_clicked_event(json):
                     "A disgrace. &#129326;"
                 ]
                 msg += random.choice(insults)
-        write_chat_message("system", msg)
+        write_chat_message(msg)
         if tile.type == "bomb":
             msg = f"Team {user.team} lost."
         else:
             msg = "Score: {red} (red) -- {blue} (blue)".format(**playground.get_score())
-        write_chat_message("system", msg)
+        write_chat_message(msg)
         ask_all_sessions_to_request_playground_update()
         # todo: If bomb, the game should be over
     else:

@@ -1,17 +1,22 @@
 #!/usr/bin/env python3
 
 # std
-from typing import List
+from typing import List, Optional
+
+# ours
+from codenames.users import User
 
 
 class Message(object):
-    def __init__(self, user: str, message: str):
-        self.user = user
+    def __init__(self, message: str, user: Optional[User] = None):
+        self.user = user  # type: Optional[User]
         self.message = message
 
     def to_html(self):
-        return f"{self.user}: {self.message}"
-
+        if self.user:
+            return f"{self.user.name} ({self.user.team}): {self.message}"
+        else:
+            return self.message
 
 class Messages(object):
     def __init__(self):
