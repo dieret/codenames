@@ -2,8 +2,7 @@
 
 ## Important
 
-* [ ] When game is won/lost, the control elements in the playground should freeze
-* [ ] buttons to restart game with confirmation
+* [ ] When game is won/lost, the control elements in the playground should freeze (really? could be fun to still be able to play around)
 * [ ] deploy to server (add wsgi script etc.)
 
 ## Nice to have
