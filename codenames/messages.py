@@ -26,5 +26,5 @@ class Messages(object):
         self.messages.append(message)
 
     def to_html(self):
-        return "<br/>".join([m.to_html() for m in self.messages])
+        return "<br/>".join([m.to_html() for m in reversed(self.messages)])
 
