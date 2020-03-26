@@ -96,10 +96,19 @@ class Playground(object):
     @classmethod
     def generate_new(cls):
         fields = []
+        
+        # choose random words
         with open("codenames/words","r") as f:
             all_words = f.readlines()
         all_words = [word.strip() for word in all_words]
         words = random.sample(all_words, 25)
+
+        # set up card ownership
+        blue_count = random.choice([8,9])
+        red_count = 17-blue_count
+        types = ["bomb"] + ["red"] * red_count + ["blue"] * blue_count + ["none"]*7  
+        random.shuffle(types)
+    
         for i in range(25):
-            fields.append(PlaygroundTile(words[i], random.choice(["red", "blue", "bomb"]), i))
+            fields.append(PlaygroundTile(words[i], types[i], i))
         return cls(fields)
