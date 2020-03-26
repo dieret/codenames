@@ -12,9 +12,12 @@ body {
   color: black; /* black text */
   padding: 15px 32px;
   text-align: center;
+  vertical-align: middle;
   text-decoration: none;
   display: inline-block;
   font-size: 16px;
+  width:20%;
+  height:20%
 }
 
 .unclicked.red {
