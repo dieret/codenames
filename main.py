@@ -41,7 +41,8 @@ def handle_user_connect(json, ):
     """ Gets triggered by the frontend if a user connected, i.e., the browser
     window was opened by someone (not necessarily a login yet). """
     app.logger.info("user connected: " + str(json))
-    update_chat_messages()
+    if messages.messages:
+        update_chat_messages()
 
 
 @socketio.on("login")

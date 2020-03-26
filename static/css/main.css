@@ -102,6 +102,9 @@ body {
     /*padding-top: 20px;*/
 }
 
+.message_holder {
+    max-height: 80%;
+}
 
 /*
 Kombinations:

@@ -89,6 +89,8 @@
         function( msg ) {
           if( typeof msg.message !== 'undefined' ) {
             $( 'div.message_holder' ).html(msg.message);
+            msg_holder = document.getElementById("message_holder");
+            msg_holder.scrollTo(0, msg_holder.scrollHeight)
           }
         }
       );
@@ -134,7 +136,8 @@
             // together with the html
             socket.emit("request_update_playground", {user: user});
             document.getElementById("container_login").innerHTML="";
-           // set_disabled_login(true)
+//            set_disabled_login(true);
+            set_disabled_controls("block");
           }
           else {
             console.log("failure");
@@ -152,7 +155,6 @@
       // Disable or enable the login controls after a user has succesfully logged in
       // or out.
       function set_disabled_login( state ){
-        console.debug("Disabling login controls");
         $("#radio_team_red").prop("disabled", state);
         $("#radio_team_blue").prop("disabled", state);
         $("#radio_role_explainer").prop("disabled", state);
@@ -161,6 +163,10 @@
         $("#user_login").prop("disabled", state);
       }
 
+      function set_disabled_controls( state ){
+          $("#game_control_div").css("display", state);
+          $("#chat_input_div").css("display", state);
+      }
 
     </script>
   </head>
@@ -173,6 +179,7 @@
 
 
   <div class="sidebar">
+
     <div class="container login" id="container_login">
       <h2 class="label label-default">Login</h2>
       <form action="" method="POST" id="login">
@@ -200,22 +207,28 @@
       <div id="login_message">Please login</div>
     </div>
 
+    <div id="game_control_div" class="container game_control"  style="display: none;">
+      <h2 class="label label-default">Game control</h2>
+      <button id="restart_button" class="btn btn-danger">Restart game</button>
+    </div>
 
-    <div class="container chat">
+    <div class="container chat" id="message_holder">
       <h2 class="label label-default">Chat</h2>
-      <div class="message_holder">
+      <div class="message_holder" >
         No message yet..
       </div>
     </div>
+
     <div style="height: 120px">
       <form action="" method="POST">
-        <div class="form-group">
+        <div class="form-group" id="chat_input_div" style="display: none;">
           <label for="chat_message_input"></label>
           <input id="chat_message_input" type="text" class="form-control" placeholder="Your message"/>
           <button type="submit" class="btn btn-success">Submit</button>
         </div>
       </form>
     </div>
+
   </div>
 
   </body>
