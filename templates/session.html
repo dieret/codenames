@@ -78,6 +78,11 @@
           console.debug(index);
           socket.emit( "tile_clicked", {user: user, index: index} )
       }
+    
+      function restartGame(){
+          console.debug('Game restart');
+          socket.emit( 'game_restart', {user: user} );
+      }
 
       // Handling whatever is returned from the python backend
       // =====================================================
@@ -112,7 +117,7 @@
           console.debug("Updating playground");
           if( typeof data["playground_html"] !== 'undefined' ) {
             $( '#playground_content' ).html(data["playground_html"]);
-          }
+          } 
         }
       );
 
@@ -209,7 +214,7 @@
 
     <div id="game_control_div" class="container game_control"  style="display: none;">
       <h2 class="label label-default">Game control</h2>
-      <button id="restart_button" class="btn btn-danger">Restart game</button>
+      <button id="restart_button"  class="btn btn-danger" onclick="restartGame()">Restart game</button>
     </div>
 
     <div class="container chat" id="message_holder">
