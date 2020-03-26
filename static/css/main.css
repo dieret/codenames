@@ -7,14 +7,34 @@ body {
 
 .tile {
   background-color: #FFD480; /* brown background */
-  border: 4px solid white; /* brown  border */
+  border: 4px solid white; /*  whiteborder */
   border-radius: 10px;
-  color: black; /* White text */
+  color: black; /* black text */
   padding: 15px 32px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
   font-size: 16px;
+}
+
+.unclicked.red {
+  border: 4px solid #dd2800; /* red  border */
+}
+
+.unclicked.bomb {
+  border: 4px solid white;
+  background: black;
+  color: white;
+}
+
+.unclicked.bomb:hover {
+  border: 4px solid white;
+  background: black;
+  color: white;
+}
+
+.unclicked.blue {
+  border: 4px solid #000ad3; /* blue  border */
 }
 
 
@@ -23,7 +43,7 @@ body {
 }
 
 .clicked.red {
-    background-color: #af3117;
+    background-color: #dd2800;
     cursor: default;
 }
 .clicked:hover.red {
