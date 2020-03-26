@@ -1,7 +1,8 @@
-<html>
-  <title>Mathegruppen Codenames</title>
+<html lang="en">
 
   <head>
+    <title>Mathegruppen Codenames</title>
+
     {#<script src="{{ url_for('static', filename='js/fos.min.js') }}"></script>#}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
@@ -30,8 +31,9 @@
           $( 'form' ).on(
             'submit',
             function( e ) {
+              let messageField = $( '#chat_message_input' );
               e.preventDefault();
-              let user_input = $( 'input.message' ).val();
+              let user_input = messageField.val();
               socket.emit(
                 'chat_message_received',
                 {
@@ -39,7 +41,7 @@
                     user : user,
                 }
               );
-              $( 'input.message' ).val( '' ).focus();
+              messageField.val( '' ).focus();
             }
           );
 
@@ -52,7 +54,7 @@
             'submit',
             function( e ) {
               e.preventDefault();
-              let user_input = $( 'input.user' ).val();
+              let user_input = $( "#user_input" ).val();
               let team = $('input[name=radio_team]:checked', '#login').val();
               let role = $('input[name=radio_role]:checked', '#login').val();
               console.debug(team);
@@ -82,6 +84,8 @@
       // Handling whatever is returned from the python backend
       // =====================================================
 
+      // Gets triggered by the backend and hands us the full html content of the
+      // chat history box
       socket.on(
         'update_chat_messages',
         function( msg ) {
@@ -91,6 +95,8 @@
         }
       );
 
+      // The backend asks us to make a request to get handed the html to update
+      // the playground
       socket.on(
           "ask_all_sessions_to_request_update_playground",
           function (msg) {
@@ -99,12 +105,13 @@
           }
       );
 
+      // The backend hands us HTML for the playground so we can update it.
       socket.on(
         'update_playground',
         function( data ) {
           console.debug("Updating playground");
-          if( typeof data.playground_html !== 'undefined' ) {
-            $( 'div.playground' ).html(data.playground_html);
+          if( typeof data["playground_html"] !== 'undefined' ) {
+            $( 'div.playground' ).html(data["playground_html"]);
           }
         }
       );
@@ -168,7 +175,8 @@
   <div class="container login">
     <form action="" method="POST" id="login">
       <div class="form-group">
-        <input id="user_input" type="text" class="user" class="form-control" placeholder="Your name" value="test"/>
+        <label for="user_input"></label>
+        <input id="user_input" type="text" class="form-control" placeholder="Your name" value="test"/>
 
         <fieldset>
           <input type="radio" id="radio_team_red" name="radio_team" value="red" checked="checked">
@@ -198,7 +206,8 @@
 
     <form action="" method="POST">
       <div class="form-group">
-        <input type="text" class="message" class="form-control" placeholder="Your message"/>
+        <label for="chat_message_input"></label>
+        <input id="chat_message_input" type="text" class="form-control" placeholder="Your message"/>
         <button type="submit" class="btn btn-success">Submit</button>
       </div>
     </form>
