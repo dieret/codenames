@@ -18,39 +18,19 @@ class PlaygroundTile(object):
         self.clicked_by = None
 
     def get_tile_class(self, viewer):
-        if viewer == "guesser":
-            # todo: must be clicked-wrong/right
-            if self.clicked_by is None:
-                return "guesser unclicked"
-            else:
-                cls = "guesser clicked"
-                if self.type == "blue":
-                    cls += " blue"
-                elif self.type == "red":
-                    cls += " red"
-                elif self.type == "bomb":
-                    cls += " bomb"
-                elif self.type == "none":
-                    cls += " none"
-                return cls
-        elif viewer == "explainer":
-            if self.clicked_by is None:
-                cls = "explainer unclicked"
-            else:
-                cls = "explainer clicked"
-            if self.type == "blue":
-                cls += " blue"
-            elif self.type == "red":
-                cls += " red"
-            elif self.type == "bomb":
-                cls += " bomb"
-            elif self.type == "none":
-                cls += " none"
-            else:
-                raise ValueError(f"Invalid type {self.type}")
-            return cls
+        classes = []
+
+        if self.clicked_by is not None or viewer == "explainer":
+            classes.append(self.type)
+
+        if self.clicked_by is not None:
+            classes.append("clicked")
         else:
-            raise ValueError
+            classes.append("unclicked")
+
+        classes.append(viewer)
+
+        return " ".join(classes)
 
     def to_html(self, viewer):
         attributes = [
