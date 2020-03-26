@@ -15,8 +15,8 @@ body {
 .tile {
   display: flex;
   background-color: #FFD480; /* brown background */
-  border: 2px solid black; /*  whiteborder */
   border-radius: 10px;
+  border: 3px solid black;
   color: black; /* black text */
   padding: 15px 32px;
   text-align: center;
@@ -27,31 +27,32 @@ body {
   font-size: 16px;
   width:18%;
   height:15%;
-  margin-left: 2px;
-  margin-right: 2px;
-  margin-top: 2px;
-  margin-bottom: 2px;
+  margin-left: 8px;
+  margin-right: 8px;
+  margin-top: 8px;
+  margin-bottom: 8px;
   font-weight: bold;
+  box-sizing: border-box;
+  transform: translateY(-50%);
 }
 
 .unclicked.red {
-  border: 4px solid #dd2800; /* red  border */
+  background-color: #fc9cb1; 
 }
 
+.unclicked.blue {
+  background-color: #44a6fc;
+}
+
+
 .unclicked.bomb {
-  border: 4px solid black;
   background: black;
   color: white;
 }
 
 .unclicked.bomb:hover {
-  border: 4px solid white;
   background: black;
   color: white;
-}
-
-.unclicked.blue {
-  border: 4px solid #000ad3; /* blue  border */
 }
 
 
@@ -60,9 +61,15 @@ body {
   box-shadow: 3px 3px 2px grey;
 }
 
+.clicked.none {
+    background-color: #cccccc;
+    color: #cccccc;
+    cursor: default;
+}
+
 .clicked.red {
     background-color: #dd2800;
-    border: 4px solid #dd2800; /*  whiteborder */
+    color: #dd2800;
     cursor: default;
 }
 .clicked:hover.red {
@@ -71,19 +78,25 @@ body {
 
 .clicked.blue {
     background-color: #0042af;
+    color: #0042af;
     cursor: default;
 }
 .clicked:hover.blue {
-    background-color: #0045b3;
+    background-color: #0055c3;
     color: white;
 }
 
 .clicked.bomb {
     background-color: #000000;
+    color:white;
     cursor: default;
+    animation-name: bomb_animation;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
 }
-.clicked:hover.bomb {
-    background-color: #000000;
+@keyframes bomb_animation {
+  from {background-color: yellow;}
+  to {background-color: red;}
 }
 
 .unclicked.explainer {
