@@ -73,7 +73,7 @@ class Playground(object):
     def __init__(self, tiles: List[PlaygroundTile]):
         self.tiles = tiles
         #: Number of columns in which the tiles are presented
-        self.ncols = 6
+        self.ncols = 5
 
     def to_html(self, user_role) -> str:
         out = ""
@@ -96,6 +96,6 @@ class Playground(object):
     @classmethod
     def generate_new(cls):
         fields = []
-        for i in range(36):
+        for i in range(25):
             fields.append(PlaygroundTile("word", random.choice(["red", "blue", "bomb"]), i))
         return cls(fields)
