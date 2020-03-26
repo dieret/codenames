@@ -141,7 +141,7 @@ def handle_tile_clicked_event(json):
         ask_all_sessions_to_request_playground_update()
         # todo: If bomb, the game should be over
     else:
-        msg = f"Tile clicking ignored, because user {user.nameastin} is not " \
+        msg = f"Tile clicking ignored, because user {user.name} is not " \
               f"of role 'guesser', but of role '{user.role}'."
         app.logger.info(msg)
 
