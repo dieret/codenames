@@ -109,7 +109,7 @@
         function( data ) {
           console.debug("Updating playground");
           if( typeof data["playground_html"] !== 'undefined' ) {
-            $( 'div.playground' ).html(data["playground_html"]);
+            $( '#playground_content' ).html(data["playground_html"]);
           }
         }
       );
@@ -166,64 +166,58 @@
 
   <body>
 
-  <div class="container">
-    <div class="page-header">
-    <h1>Codenames <small>Ein Spiel für die ganze Mathegruppe</small></h1>
-    </div>
-  </div>
-
-  <div class="container">
+  <div class="container playground">
     <h2 class="label label-default">Playground</h2>
-    <div class="playground">
+    <div id="playground_content">
       <!-- gets filled by the JS -->
     </div>
   </div>
 
 
-<div class="sidebar">
-  <div class="container login">
-    <h2 class="label label-default">Login</h2>
-    <form action="" method="POST" id="login">
-      <div class="form-group">
-        <label for="user_input"></label>
-        <input id="user_input" type="text" class="form-control" placeholder="Your name" value="test"/>
+  <div class="sidebar">
+    <div class="container login">
+      <h2 class="label label-default">Login</h2>
+      <form action="" method="POST" id="login">
+        <div class="form-group">
+          <label for="user_input"></label>
+          <input id="user_input" type="text" class="form-control" placeholder="Your name" value="test"/>
 
-        <fieldset>
-          <input type="radio" id="radio_team_red" name="radio_team" value="red" checked="checked">
-          <label for="radio_team_red"> Team red</label>
-          <input type="radio" id="radio_team_blue" name="radio_team" value="blue">
-          <label for="radio_team_blue"> Team blue</label>
-        </fieldset>
+          <fieldset>
+            <input type="radio" id="radio_team_red" name="radio_team" value="red" checked="checked">
+            <label for="radio_team_red"> Team red</label>
+            <input type="radio" id="radio_team_blue" name="radio_team" value="blue">
+            <label for="radio_team_blue"> Team blue</label>
+          </fieldset>
 
-        <fieldset>
-          <input type="radio" id="radio_role_explainer" name="radio_role" value="explainer">
-          <label for="radio_role_explainer"> Explainer</label>
-          <input type="radio" id="radio_role_guesser" name="radio_role" value="guesser" checked="checked">
-          <label for="radio_role_guesser"> Guesser</label>
-        </fieldset>
+          <fieldset>
+            <input type="radio" id="radio_role_explainer" name="radio_role" value="explainer">
+            <label for="radio_role_explainer"> Explainer</label>
+            <input type="radio" id="radio_role_guesser" name="radio_role" value="guesser" checked="checked">
+            <label for="radio_role_guesser"> Guesser</label>
+          </fieldset>
 
-        <button id="login_button" type="submit" class="btn btn-success">Login</button>
-      </div>
-    </form>
-    <div id="login_message">Please login</div>
-  </div>
+          <button id="login_button" type="submit" class="btn btn-success">Login</button>
+        </div>
+      </form>
+      <div id="login_message">Please login</div>
+    </div>
 
 
     <div class="container chat">
-  <h2 class="label label-default">Chat</h2>
-    <div class="message_holder">
-      No message yet..
-    </div>
-
-    <form action="" method="POST">
-      <div class="form-group">
-        <label for="chat_message_input"></label>
-        <input id="chat_message_input" type="text" class="form-control" placeholder="Your message"/>
-        <button type="submit" class="btn btn-success">Submit</button>
+      <h2 class="label label-default">Chat</h2>
+      <div class="message_holder">
+        No message yet..
       </div>
-    </form>
+
+      <form action="" method="POST">
+        <div class="form-group">
+          <label for="chat_message_input"></label>
+          <input id="chat_message_input" type="text" class="form-control" placeholder="Your message"/>
+          <button type="submit" class="btn btn-success">Submit</button>
+        </div>
+      </form>
+    </div>
   </div>
-</div>
 
   </body>
 </html>
