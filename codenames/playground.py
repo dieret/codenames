@@ -21,18 +21,28 @@ class PlaygroundTile(object):
 
         self.clicked_by = None  # type: Optional[User]
 
+
+    @property
+    def was_clicked(self) -> bool:
+        return self.clicked_by is not None
+
+    def point_for(self, team: str) -> int:
+        if self.was_clicked and team == self.type:
+            return 1
+        else:
+            return 0
+
     @property
     def correctly_clicked(self) -> Optional[bool]:
         """ Returns true if was clicked correctly, false otherwise. If not
         clicked at all, return None"""
-        if self.clicked_by is None:
+        if not self.was_clicked:
             return None
         else:
             if self.clicked_by.team == self.type:
                 return True
             else:
                 return False
-
 
     def get_tile_class(self, user_role: str) -> str:
         classes = []
@@ -72,6 +82,16 @@ class Playground(object):
                 out += "<br/>"
             out += field.to_html(user_role=user_role)
         return out
+
+    def get_score(self):
+        points = {
+            "red": 0,
+            "blue": 0
+        }
+        for tile in self.tiles:
+            for team in ["red", "blue"]:
+                points[team] += tile.point_for(team)
+        return points
 
     @classmethod
     def generate_new(cls):

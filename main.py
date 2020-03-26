@@ -116,15 +116,29 @@ def handle_tile_clicked_event(json):
             ]
             msg += random.choice(congratulations)
         else:
-            insults = [
-                "Booooo! ",
-                "Hope you're proud of yourself... &#128530; ",
-                "Really? I expected better of you. &#128550; ",
-                "I'm pretty disappointed, but oh well. &#128580; "
-            ]
-            msg += random.choice(insults)
+            if tile.type != "bomb":
+                insults = [
+                    "Booooo! ",
+                    "Hope you're proud of yourself... &#128530; ",
+                    "Really? I expected better of you. &#128550; ",
+                    "I'm pretty disappointed, but oh well. &#128580; "
+                ]
+                msg += random.choice(insults)
+            else:
+                insults = [
+                    "I'm speechless. &#129326;",
+                    "I don't even have words for this. &#129326;",
+                    "A disgrace. &#129326;"
+                ]
+                msg += random.choice(insults)
+        write_chat_message("system", msg)
+        if tile.type == "bomb":
+            msg = f"Team {user.team} lost."
+        else:
+            msg = "Score: {red} (red) -- {blue} (blue)".format(**playground.get_score())
         write_chat_message("system", msg)
         ask_all_sessions_to_request_playground_update()
+        # todo: If bomb, the game should be over
     else:
         msg = f"Tile clicking ignored, because user {user.nameastin} is not " \
               f"of role 'guesser', but of role '{user.role}'."
