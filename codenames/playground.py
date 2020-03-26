@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 
 # std
-from typing import List
+from typing import List, Optional
 import random
+
+# ours
+from codenames.users import User
 
 
 class PlaygroundTile(object):
@@ -16,7 +19,20 @@ class PlaygroundTile(object):
         #: blue, red, bomb, none
         self.type = tile_type
 
-        self.clicked_by = None
+        self.clicked_by = None  # type: Optional[User]
+
+    @property
+    def correctly_clicked(self) -> Optional[bool]:
+        """ Returns true if was clicked correctly, false otherwise. If not
+        clicked at all, return None"""
+        if self.clicked_by is None:
+            return None
+        else:
+            if self.clicked_by.team == self.type:
+                return True
+            else:
+                return False
+
 
     def get_tile_class(self, user_role: str) -> str:
         classes = []

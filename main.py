@@ -2,6 +2,7 @@
 
 # std
 import logging
+import random
 
 # 3rd
 from flask import Flask, render_template
@@ -104,9 +105,24 @@ def handle_tile_clicked_event(json):
     user = users[json["user"]]
     if user.role == "guesser":
         tile = playground.tiles[json["index"]]
-        tile.clicked_by = user.name
+        tile.clicked_by = user
         msg = f"User {user.name} (team {user.team}) has clicked on " \
-              f"field '{tile.content}'."
+              f"field '{tile.content}'. "
+        if tile.correctly_clicked:
+            congratulations = [
+                "And that was the right decision! Congratulations! &#128521; ",
+                "Good job! I expected nothing less. &#128526; ",
+                "Nice one! &#128519; ",
+            ]
+            msg += random.choice(congratulations)
+        else:
+            insults = [
+                "Booooo! ",
+                "Hope you're proud of yourself... &#128530; ",
+                "Really? I expected better of you. &#128550; ",
+                "I'm pretty disappointed, but oh well. &#128580; "
+            ]
+            msg += random.choice(insults)
         write_chat_message("system", msg)
         ask_all_sessions_to_request_playground_update()
     else:
