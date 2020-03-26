@@ -8,14 +8,20 @@ body {
     /*max-width: 800px;*/
 }
 
+.container.chat {
+    height: 70%;
+    overflow-y: auto;
+}
 .tile {
+  display: flex;
   background-color: #FFD480; /* brown background */
   border: 4px solid white; /*  whiteborder */
   border-radius: 10px;
   color: black; /* black text */
   padding: 15px 32px;
   text-align: center;
-  vertical-align: middle;
+  justify-content: center;
+  align-items: center; 
   text-decoration: none;
   display: inline-block;
   font-size: 16px;

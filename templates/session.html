@@ -133,7 +133,8 @@
             // Trigger the backend to send us an update_playground event
             // together with the html
             socket.emit("request_update_playground", {user: user});
-            set_disabled_login(true)
+            document.getElementById("container_login").innerHTML="";
+           // set_disabled_login(true)
           }
           else {
             console.log("failure");
@@ -172,7 +173,7 @@
 
 
   <div class="sidebar">
-    <div class="container login">
+    <div class="container login" id="container_login">
       <h2 class="label label-default">Login</h2>
       <form action="" method="POST" id="login">
         <div class="form-group">
@@ -205,7 +206,8 @@
       <div class="message_holder">
         No message yet..
       </div>
-
+    </div>
+    <div style="height: 120px">
       <form action="" method="POST">
         <div class="form-group">
           <label for="chat_message_input"></label>
