@@ -6,21 +6,22 @@ import random
 
 
 class PlaygroundTile(object):
-    def __init__(self, content: str, type: str, index):
+    def __init__(self, content: str, tile_type: str, index: int):
         #: HTML content to display?
         self.content = content
 
+        #: Index in the playground
         self.index = index
 
         #: blue, red, bomb, none
-        self.type = type
+        self.type = tile_type
 
         self.clicked_by = None
 
-    def get_tile_class(self, viewer):
+    def get_tile_class(self, user_role: str) -> str:
         classes = []
 
-        if self.clicked_by is not None or viewer == "explainer":
+        if self.clicked_by is not None or user_role == "explainer":
             classes.append(self.type)
 
         if self.clicked_by is not None:
@@ -28,36 +29,37 @@ class PlaygroundTile(object):
         else:
             classes.append("unclicked")
 
-        classes.append(viewer)
+        classes.append(user_role)
 
         return " ".join(classes)
 
-    def to_html(self, viewer):
+    def to_html(self, user_role: str) -> str:
         attributes = [
             f'id="tile{self.index}"',
-            f'class="tile {self.get_tile_class(viewer=viewer)}"',
+            f'class="tile {self.get_tile_class(user_role=user_role)}"',
         ]
         if self.clicked_by is None:
             attributes.append(f'onclick="tileClicked({self.index})"')
         return f'<a {" ".join(attributes)} >{self.content}</a>'
 
 
-class PlayGround(object):
+class Playground(object):
     def __init__(self, tiles: List[PlaygroundTile]):
         self.tiles = tiles
+        #: Number of columns in which the tiles are presented
         self.ncols = 6
 
-    def to_html(self, viewer="player"):
+    def to_html(self, user_role) -> str:
         out = ""
         for i, field in enumerate(self.tiles):
             if i > 0 and i % self.ncols == 0:
                 out += "<br/>"
-            out += field.to_html(viewer=viewer)
+            out += field.to_html(user_role=user_role)
         return out
 
-
-def generate_new_playground() -> PlayGround:
-    fields = []
-    for i in range(36):
-        fields.append(PlaygroundTile("word", random.choice(["red", "blue", "bomb"]), i))
-    return PlayGround(fields)
+    @classmethod
+    def generate_new(cls):
+        fields = []
+        for i in range(36):
+            fields.append(PlaygroundTile("word", random.choice(["red", "blue", "bomb"]), i))
+        return cls(fields)

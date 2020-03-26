@@ -10,7 +10,7 @@ from flask_socketio import SocketIO, send, emit
 # ours
 from codenames.users import Users, User
 from codenames.messages import Messages, Message
-from codenames.playground import generate_new_playground
+from codenames.playground import Playground
 
 
 app = Flask(__name__)
@@ -19,7 +19,7 @@ socketio = SocketIO(app)
 
 
 users = Users()
-playground = generate_new_playground()
+playground = Playground.generate_new()
 messages = Messages()
 
 
@@ -129,7 +129,7 @@ def update_playground(json):
     app.logger.info(f"Handing HTML for viewer role {role} to user {user.name}")
     emit(
         'update_playground',
-        {"playground_html": playground.to_html(viewer=role)}
+        {"playground_html": playground.to_html(user_role=role)}
     )
 
 
