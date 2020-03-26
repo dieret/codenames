@@ -80,8 +80,10 @@
       }
     
       function restartGame(){
-          console.debug('Game restart');
-          socket.emit( 'game_restart', {user: user} );
+          if (confirm("Do you really want to restart the game?")) {
+            console.debug('Game restart');
+            socket.emit( 'game_restart', {user: user} );
+          }
       }
 
       // Handling whatever is returned from the python backend
