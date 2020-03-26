@@ -18,6 +18,7 @@ class Message(object):
         else:
             return self.message
 
+
 class Messages(object):
     def __init__(self):
         self.messages = []  # type: List[Message]
