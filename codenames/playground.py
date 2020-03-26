@@ -79,5 +79,5 @@ class PlayGround(object):
 def generate_new_playground() -> PlayGround:
     fields = []
     for i in range(36):
-        fields.append(PlaygroundTile("word", random.choice(["red", "blue", "bomb", "none"]), i))
+        fields.append(PlaygroundTile("word", random.choice(["red", "blue", "bomb"]), i))
     return PlayGround(fields)

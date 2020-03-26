@@ -5,7 +5,7 @@ import logging
 
 # 3rd
 from flask import Flask, render_template
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, send, emit
 
 # ours
 from codenames.users import Users, User
@@ -55,7 +55,7 @@ def handle_user_login_event(json):
         "success": success
     }
     app.logger.debug("Returning json: " + str(return_json))
-    socketio.emit('user_login', return_json, callback=messageReceived)
+    emit('user_login', return_json, callback=messageReceived)
     if success:
         write_chat_message("system", f"User {json['user']} has joined team {json['team']} as {json['role']}.")
         users.add_user(User(json["user"], team=json["team"], role=json["role"]))
@@ -86,10 +86,13 @@ def update_chat_messages():
 def handle_tile_clicked_event(json):
     app.logger.info("Tile clicked: " + str(json))
     user = users[json["user"]]
-    tile = playground.tiles[json["index"]]
-    tile.clicked_by = user.name
-    write_chat_message("system", f"User {user.name} (team {user.team}) has clicked on field '{tile.content}'.")
-    ask_all_sessions_to_request_playground_update()
+    if user.role == "guesser":
+        tile = playground.tiles[json["index"]]
+        tile.clicked_by = user.name
+        write_chat_message("system", f"User {user.name} (team {user.team}) has clicked on field '{tile.content}'.")
+        ask_all_sessions_to_request_playground_update()
+    else:
+        app.logger.info(f"Tile clicking ignored, because user {user.nameastin} is not a guesser, but of role {user.role}.")
 
 
 @socketio.on("request_update_playground")
@@ -98,10 +101,13 @@ def update_playground(json=None):
     if json is None:
         json = {}
     if "user" in json:
-        role = users[json["user"]].role
+        user = users[json["user"]]
+        role = user.role
     else:
+        user = None
         role = None
-    socketio.emit('update_playground', {"playground_html": playground.to_html(viewer=role)}, callback=messageReceived)
+    app.logger.info(f"Handing HTML for viewer role {role} to user {user.name}")
+    emit('update_playground', {"playground_html": playground.to_html(viewer=role)})
 
 
 def ask_all_sessions_to_request_playground_update():
@@ -110,8 +116,8 @@ def ask_all_sessions_to_request_playground_update():
 
 if __name__ == '__main__':
     app.logger.setLevel(logging.DEBUG)
-    handler = logging.StreamHandler()
-    handler.setLevel(logging.DEBUG)
-    app.logger.addHandler(handler)
+    # handler = logging.StreamHandler()
+    # handler.setLevel(logging.DEBUG)
+    # app.logger.addHandler(handler)
 
     socketio.run(app, debug=True)
