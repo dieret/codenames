@@ -96,6 +96,10 @@ class Playground(object):
     @classmethod
     def generate_new(cls):
         fields = []
+        with open("codenames/words","r") as f:
+            all_words = f.readlines()
+        all_words = [word.strip() for word in all_words]
+        words = random.sample(all_words, 25)
         for i in range(25):
-            fields.append(PlaygroundTile("word", random.choice(["red", "blue", "bomb"]), i))
+            fields.append(PlaygroundTile(words[i], random.choice(["red", "blue", "bomb"]), i))
         return cls(fields)
