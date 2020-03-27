@@ -123,6 +123,16 @@
         }
       );
 
+      // The backend hands us HTML for the team overview
+      socket.on(
+          "update_teams",
+          function (data) {
+              console.debug("Updating teams");
+              console.debug(data["team_overview_html"]);
+              $( '#team_overview_div').html(data["team_overview_html"])
+          }
+      );
+
       // Gets triggered by the backend after we requested a user login. The backend
       // now tells us whether the login was successful. If it was, we disable the
       // login menu and request an update of the playground from the backend.
@@ -217,6 +227,12 @@
     <div id="game_control_div" class="container game_control"  style="display: none;">
       <h2 class="label label-default">Game control</h2>
       <button id="restart_button"  class="btn btn-danger" onclick="restartGame()">Restart game</button>
+    </div>
+
+    <div id="team_info_container" class="container">
+      <h2 class="label label-default">Teams</h2>
+      <div id="team_overview_div" class="container">
+      </div>
     </div>
 
     <div class="container chat" id="message_holder">

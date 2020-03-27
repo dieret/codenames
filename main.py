@@ -71,7 +71,7 @@ def handle_user_login_event(json):
               f"{json['role']}."
         write_chat_message(msg)
         users.add_user(User(json["user"], team=json["team"], role=json["role"]))
-
+        update_team_info()
 
 @socketio.on('chat_message_received')
 def handle_chat_message_received(json, methods=('GET', 'POST')):
@@ -96,7 +96,6 @@ def write_chat_message(message: str, user: Optional[Union[str, User]] = None) ->
     """ Write a chat message to everyone. """
     if isinstance(user, str):
         user = users[user]
-    print("write", user)
     messages.add_message(Message(message, user=user))
     update_chat_messages()
 
@@ -105,6 +104,14 @@ def update_chat_messages():
     """ Triggers an update of the chat history box in all clients. """
     return_json = {"message": messages.to_html()}
     socketio.emit('update_chat_messages', return_json, callback=messageReceived)
+
+
+def update_team_info():
+    """ Triggers an update of the team overview box in all clients. """
+
+    return_json = {"team_overview_html": users.get_team_overview_html()}
+    app.logger.debug("Update team overview " + str(return_json))
+    socketio.emit("update_teams", return_json)
 
 
 @socketio.on("tile_clicked")
