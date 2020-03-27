@@ -111,11 +111,13 @@ def update_team_info():
 
     out = ""
     for team in ["red", "blue"]:
+        out += f"<span class=\"team_info_{team}\">"
         out += f"<b>Team {team.capitalize()} ({playground.get_score()[team]})</b>"
         out += f"<div>"
         for member in users.get_by_team(team):
             out += f'{member.to_html("user-role")} '
         out += "</div>"
+        out += "</span>"
 
     return_json = {"team_overview_html": out}
     app.logger.debug("Update team overview " + str(return_json))
