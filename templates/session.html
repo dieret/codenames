@@ -166,6 +166,14 @@
         }
       );
 
+      socket.on(
+        'force_reload_page',
+        function ( msg ) {
+          console.log("Forced to reload page");
+          location.reload(true);
+        }
+      );
+
       // Helper functions
       // ================
 

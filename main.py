@@ -96,7 +96,10 @@ def reset_game(json, methods=('GET', 'POST')):
         "{user} has restarted the game".format(
             user=users[json['user']].to_html())
     )
+    # fixme: don't use private
+    users._username2user = {}
     ask_all_sessions_to_request_playground_update()
+    socketio.emit('force_reload_page', {})
 
 
 def write_chat_message(message: str, user: Optional[Union[str, User]] = None) -> None:
