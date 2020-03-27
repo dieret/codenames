@@ -45,7 +45,7 @@ class PlaygroundTile(object):
             else:
                 return False
 
-    def get_tile_class(self, user_role: str) -> str:
+    def get_tile_classes(self, user_role: str) -> List[str]:
         classes = []
 
         if self.clicked_by is not None or user_role == "explainer":
@@ -58,16 +58,18 @@ class PlaygroundTile(object):
 
         classes.append(user_role)
 
-        return " ".join(classes)
+        return classes
 
     def to_html(self, user_role: str) -> str:
+        class_str = " ".join(self.get_tile_classes(user_role=user_role) + ["tile"])
         attributes = [
             f'id="tile{self.index}"',
-            f'class="tile {self.get_tile_class(user_role=user_role)}"',
+            f'class="{class_str}"',
         ]
         if self.clicked_by is None:
             attributes.append(f'onclick="tileClicked({self.index})"')
-        return f'<a {" ".join(attributes)} >{self.content}</a>'
+        attribute_str = " ".join(attributes)
+        return f'<span {attribute_str}><a>{self.content}</a></span>'
 
 
 class Playground(object):
