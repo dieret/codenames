@@ -44,6 +44,16 @@ body {
   background-color: #44a6fc;
 }
 
+.unclicked.red:hover {
+  background-color: #fc9cb1; 
+  box-shadow: 3px 3px 2px grey;
+}
+
+.unclicked.blue:hover {
+  background-color: #44a6fc;
+  box-shadow: 3px 3px 2px grey;
+}
+
 
 .unclicked.bomb {
   background: black;
