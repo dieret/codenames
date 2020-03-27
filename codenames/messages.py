@@ -14,7 +14,7 @@ class Message(object):
 
     def to_html(self):
         if self.user:
-            return f"{self.user.to_html()} {self.message}"
+            return self.user.to_html() + " " + self.message
         else:
             return self.message
 

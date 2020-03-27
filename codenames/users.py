@@ -14,12 +14,16 @@ class User(object):
 
     def to_html(self, style="user-team"):
         if style == "user-team":
-            return f'<span class="badge {self.team}">{self.name.capitalize()}</span>'
+            return '<span class="badge {team}">{name}</span>'.format(
+                team=self.team, name=self.name.capitalize()
+            )
         elif style == "user-role":
             inside = self.name.capitalize()
             if not self.role == "guesser":
-                inside += f" ({self.role})"
-            out = f'<span class="badge {self.team}">{inside}</span>'
+                inside += " ({role})".format(role=self.role)
+            out = '<span class="badge {team}">{inside}</span>'.format(
+                team=self.team, inside=inside
+            )
             return out
         else:
             raise ValueError(style)

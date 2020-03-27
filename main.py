@@ -68,8 +68,12 @@ def handle_user_login_event(json):
     emit('user_login', return_json, callback=messageReceived)
     if success:
         users.add_user(User(json["user"], team=json["team"], role=json["role"]))
-        msg = f"{users[json['user']].to_html()} has joined team {json['team']} as " \
-              f"{json['role']}."
+        # todo: Format team and role
+        msg = "{user} has joined team {team} as {role}.".format(
+            user=users[json['user']].to_html(),
+            team=json['team'],
+            role=json['role'],
+        )
         write_chat_message(msg)
         update_team_info()
 
@@ -88,7 +92,10 @@ def reset_game(json, methods=('GET', 'POST')):
     app.logger.info('Restart game')
     global playground
     playground = Playground.generate_new()
-    write_chat_message(f"{users[json['user']].to_html()} has restarted the game")
+    write_chat_message(
+        "{user} has restarted the game".format(
+            user=users[json['user']].to_html())
+    )
     ask_all_sessions_to_request_playground_update()
 
 
@@ -111,11 +118,14 @@ def update_team_info():
 
     out = ""
     for team in ["red", "blue"]:
-        out += f"<span class=\"team_info_{team}\">"
-        out += f"<b>Team {team.capitalize()} ({playground.get_score()[team]})</b>"
-        out += f"<div>"
+        out += "<span class=\"team_info_{team}\">".format(team=team)
+        out += "<b>Team {team} ({score})</b>".format(
+            team=team.capitalize(),
+            score=playground.get_score()[team]
+        )
+        out += "<div>"
         for member in users.get_by_team(team):
-            out += f'{member.to_html("user-role")} '
+            out += member.to_html("user-role") + " "
         out += "</div>"
         out += "</span>"
 
@@ -167,14 +177,16 @@ def handle_tile_clicked_event(json):
         write_chat_message(msg)
         winner = playground.get_winner()
         if winner:
-            msg = f"Team {winner} won! Congratulations!"
+            msg = "Team {winner} won! Congratulations!".format(winner=winner)
             write_chat_message(msg)
         ask_all_sessions_to_request_playground_update()
         update_team_info()  # score was updated
         # todo: If bomb, the game should be over
     else:
-        msg = f"Tile clicking ignored, because user {user.name} is not " \
-              f"of role 'guesser', but of role '{user.role}'."
+        msg = "Tile clicking ignored, because user {name} is not " \
+              "of role 'guesser', but of role '{role}'.".format(
+            name=user.name, role=user.role
+        )
         app.logger.info(msg)
 
 
@@ -189,7 +201,11 @@ def update_playground(json):
     """
     user = users[json["user"]]
     role = user.role
-    app.logger.info(f"Handing HTML for viewer role {role} to user {user.name}")
+    app.logger.info(
+        "Handing HTML for viewer role {role} to user {name}".format(
+            role=role, name=user.name
+        )
+    )
     emit(
         'update_playground',
         {"playground_html": playground.to_html(user_role=role)}
