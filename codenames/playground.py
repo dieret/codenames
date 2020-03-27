@@ -76,7 +76,11 @@ class Playground(object):
         #: Number of columns in which the tiles are presented
         self.ncols = 5
 
+        self._winner = None
+
     def to_html(self, user_role) -> str:
+        if self._winner:
+            user_role = "explainer"
         out = ""
         for i, field in enumerate(self.tiles):
             if i > 0 and i % self.ncols == 0:
@@ -101,21 +105,25 @@ class Playground(object):
         return [tile for tile in self.tiles if tile.type == "bomb" and tile.was_clicked]
 
     def get_winner(self) -> Optional[str]:
+        if self._winner:
+            return self._winner
         clicked_bomb = self._get_clicked_bombs()
+        winner = None
         if clicked_bomb:
             bomb = clicked_bomb[-1]
             if bomb.clicked_by.team == "red":
-                return "blue"
+                winner = "blue"
             else:
-                return "red"
+                winner = "red"
         elif self._get_all_tiles_clicked():
             score = self.get_score()
             if score["red"] > score["blue"]:
-                return "red"
+                winner = "red"
             else:
-                return "blue"
-        else:
-            return None
+                winner = "blue"
+
+        self._winner = winner
+        return winner
 
     @classmethod
     def generate_new(cls):
