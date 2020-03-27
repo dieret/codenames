@@ -82,13 +82,15 @@ def handle_chat_message_received(json, methods=('GET', 'POST')):
     if json["user"].strip() and json["message"].strip():
         write_chat_message(json["message"], user=json["user"])
 
+
 @socketio.on('game_restart')
-def reset_game(json, methods=('GET','POST')):
+def reset_game(json, methods=('GET', 'POST')):
     app.logger.info('Restart game')
     global playground
     playground = Playground.generate_new()
     write_chat_message(f"User {json['user']} has restarted the game")
     ask_all_sessions_to_request_playground_update()
+
 
 def write_chat_message(message: str, user: Optional[Union[str, User]] = None) -> None:
     """ Write a chat message to everyone. """
@@ -141,8 +143,9 @@ def handle_tile_clicked_event(json):
                 ]
                 msg += random.choice(insults)
         write_chat_message(msg)
-        if tile.type == "bomb":
-            msg = f"Team {user.team} lost."
+        winner = playground.get_winner()
+        if winner:
+            msg = f"Team {winner} won! Congratulations!"
         else:
             msg = "Score: {red} (red) -- {blue} (blue)".format(**playground.get_score())
         write_chat_message(msg)
