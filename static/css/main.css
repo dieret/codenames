@@ -25,13 +25,10 @@ body {
   font-size: 16px;
   width:18%;
   height:15%;
-  margin-left: 8px;
-  margin-right: 8px;
-  margin-top: 8px;
-  margin-bottom: 8px;
+  margin: 8px;
   font-weight: bold;
   box-sizing: border-box;
-    position: relative;
+  position: relative;
 }
 
 .unclicked.red {
@@ -82,6 +79,7 @@ body {
 }
 .clicked:hover.red {
     background-color: #ff4227;
+    color: white;
 }
 
 .clicked.blue {
