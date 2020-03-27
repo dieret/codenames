@@ -82,6 +82,10 @@ body {
     color: white;
 }
 
+.clicked:hover.none {
+    color: black;
+}
+
 .clicked.blue {
     background-color: #0042af;
     color: #0042af;
