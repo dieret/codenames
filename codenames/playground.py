@@ -63,13 +63,18 @@ class PlaygroundTile(object):
     def to_html(self, user_role: str) -> str:
         class_str = " ".join(self.get_tile_classes(user_role=user_role) + ["tile"])
         attributes = [
-            f'id="tile{self.index}"',
-            f'class="{class_str}"',
+            'id="tile{index}"'.format(index=self.index),
+            'class="{class_str}"'.format(class_str=class_str),
         ]
         if self.clicked_by is None:
-            attributes.append(f'onclick="tileClicked({self.index})"')
+            attributes.append('onclick="tileClicked({index})"'.format(
+                index=self.index)
+            )
         attribute_str = " ".join(attributes)
-        return f'<span {attribute_str}><a>{self.content}</a></span>'
+        return '<span {attribute_str}><a>{content}</a></span>'.format(
+            attribute_str=attribute_str,
+            content=self.content
+        )
 
 
 class Playground(object):
