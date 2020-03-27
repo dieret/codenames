@@ -88,7 +88,7 @@ def reset_game(json, methods=('GET', 'POST')):
     app.logger.info('Restart game')
     global playground
     playground = Playground.generate_new()
-    write_chat_message(f"User {json['user']} has restarted the game")
+    write_chat_message(f"{users[json['user']].to_html()} has restarted the game")
     ask_all_sessions_to_request_playground_update()
 
 
@@ -137,6 +137,8 @@ def handle_tile_clicked_event(json):
         tile.clicked_by = user
         msg = f'<span class="badge {user.team}">{user.name.capitalize()}</span> clicked ' \
               f'\'{tile.content}\'. '
+        write_chat_message(msg)
+        msg = f'<span class="badge badge-secondary">Bot</span> '
         if tile.correctly_clicked:
             congratulations = [
                 "And that was the right decision! Congratulations! &#128521; ",
@@ -164,7 +166,7 @@ def handle_tile_clicked_event(json):
         winner = playground.get_winner()
         if winner:
             msg = f"Team {winner} won! Congratulations!"
-        write_chat_message(msg)
+            write_chat_message(msg)
         ask_all_sessions_to_request_playground_update()
         update_team_info()  # score was updated
         # todo: If bomb, the game should be over
