@@ -147,10 +147,14 @@ def handle_tile_clicked_event(json):
     if user.role == "guesser":
         tile = playground.tiles[json["index"]]
         tile.clicked_by = user
-        msg = f'<span class="badge {user.team}">{user.name.capitalize()}</span> clicked ' \
-              f'\'{tile.content}\'. '
+        msg = '<span class="badge {team}">{name}</span> clicked ' \
+              '\'{content}\'. '.format(
+            team=user.team,
+            name=user.name.capitalize(),
+            content=tile.content
+        )
         write_chat_message(msg)
-        msg = f'<span class="badge badge-secondary">Bot</span> '
+        msg = '<span class="badge badge-secondary">Bot</span> '
         if tile.correctly_clicked:
             congratulations = [
                 "And that was the right decision! Congratulations! &#128521; ",
