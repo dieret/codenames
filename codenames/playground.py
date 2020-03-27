@@ -100,7 +100,7 @@ class Playground(object):
         # choose random words
         with open("codenames/words","r") as f:
             all_words = f.readlines()
-        all_words = [word.strip() for word in all_words]
+        all_words = [word.strip() for word in all_words if word.strip()]
         words = random.sample(all_words, 25)
 
         # set up card ownership
