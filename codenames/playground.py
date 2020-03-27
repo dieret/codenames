@@ -106,7 +106,7 @@ class Playground(object):
         return points
 
     def _get_all_tiles_clicked(self):
-        return len([tile for tile in self.tiles if tile.was_clicked]) == len(self.tiles)
+        return len([tile for tile in self.tiles if tile.was_clicked]) == len([tile for tile in self.tiles if tile.type != "none"])
 
     def _get_clicked_bombs(self):
         return [tile for tile in self.tiles if tile.type == "bomb" and tile.was_clicked]
