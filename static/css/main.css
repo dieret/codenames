@@ -138,6 +138,17 @@ body {
   padding-top: 20px;
 }
 
+.team_info_red {
+    display: inline-block;
+    width: 50%;
+    float: left;
+}    
+.team_info_blue{
+    display: inline-block;
+    width: 50%;
+}    
+
+
 .playground {
     margin-left: 25%;
     margin-right: 5%;
