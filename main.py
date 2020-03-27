@@ -121,6 +121,9 @@ def handle_tile_clicked_event(json):
     clicking and if yes, ask all sessions to request a playground update. """
     app.logger.info("Tile clicked: " + str(json))
     user = users[json["user"]]
+    if playground.get_winner():
+        print("Winner: ", playground.get_winner())
+        return
     if user.role == "guesser":
         tile = playground.tiles[json["index"]]
         tile.clicked_by = user
