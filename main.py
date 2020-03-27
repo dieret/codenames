@@ -109,7 +109,13 @@ def update_chat_messages():
 def update_team_info():
     """ Triggers an update of the team overview box in all clients. """
 
-    return_json = {"team_overview_html": users.get_team_overview_html()}
+    out = ""
+    for team in ["red", "blue"]:
+        out += f"<b>Team {team.capitalize()} ({playground.get_score()[team]})</b>"
+        for member in users.get_by_team(team):
+            out += f'<div> {member.to_html("user-role")}</div>'
+
+    return_json = {"team_overview_html": out}
     app.logger.debug("Update team overview " + str(return_json))
     socketio.emit("update_teams", return_json)
 
@@ -156,10 +162,9 @@ def handle_tile_clicked_event(json):
         winner = playground.get_winner()
         if winner:
             msg = f"Team {winner} won! Congratulations!"
-        else:
-            msg = "Score: {red} (red) -- {blue} (blue)".format(**playground.get_score())
         write_chat_message(msg)
         ask_all_sessions_to_request_playground_update()
+        update_team_info()  # score was updated
         # todo: If bomb, the game should be over
     else:
         msg = f"Tile clicking ignored, because user {user.name} is not " \

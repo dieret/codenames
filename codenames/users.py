@@ -37,13 +37,5 @@ class Users(object):
             if user.team == team
         ]
 
-    def get_team_overview_html(self) -> str:
-        out = ""
-        for team in ["red", "blue"]:
-            out += f"<b>Team {team.capitalize()}</b>"
-            for member in self.get_by_team(team):
-                out += f'<div> {member.to_html("user-role")}</div>'
-        return out
-
     def __getitem__(self, item: str):
         return self._username2user[item]
