@@ -67,10 +67,10 @@ def handle_user_login_event(json):
     app.logger.debug("Returning json: " + str(return_json))
     emit('user_login', return_json, callback=messageReceived)
     if success:
-        msg = f"User {json['user']} has joined team {json['team']} as " \
+        users.add_user(User(json["user"], team=json["team"], role=json["role"]))
+        msg = f"{users[json['user']].to_html()} has joined team {json['team']} as " \
               f"{json['role']}."
         write_chat_message(msg)
-        users.add_user(User(json["user"], team=json["team"], role=json["role"]))
         update_team_info()
 
 @socketio.on('chat_message_received')
@@ -112,8 +112,10 @@ def update_team_info():
     out = ""
     for team in ["red", "blue"]:
         out += f"<b>Team {team.capitalize()} ({playground.get_score()[team]})</b>"
+        out += f"<div>"
         for member in users.get_by_team(team):
-            out += f'<div> {member.to_html("user-role")}</div>'
+            out += f'{member.to_html("user-role")} '
+        out += "</div>"
 
     return_json = {"team_overview_html": out}
     app.logger.debug("Update team overview " + str(return_json))
@@ -133,8 +135,8 @@ def handle_tile_clicked_event(json):
     if user.role == "guesser":
         tile = playground.tiles[json["index"]]
         tile.clicked_by = user
-        msg = f"User {user.name} (team {user.team}) has clicked on " \
-              f"field '{tile.content}'. "
+        msg = f'<span class="badge {user.team}">{user.name.capitalize()}</span> clicked ' \
+              f'\'{tile.content}\'. '
         if tile.correctly_clicked:
             congratulations = [
                 "And that was the right decision! Congratulations! &#128521; ",

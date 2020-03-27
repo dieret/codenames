@@ -8,6 +8,16 @@ body {
     /*max-width: 800px;*/
 }
 
+.badge.red {
+    background-color: #dd2800;
+    color: white;
+}
+
+.badge.blue {
+    background-color: #0042af;
+    color: white;
+}
+
 .container.chat {
     height: 70%;
     overflow-y: auto;
