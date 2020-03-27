@@ -138,7 +138,7 @@ class Playground(object):
         
         # choose random words
         path = Path(__file__).parent.resolve().parent / "data" / "words.txt"
-        with path.open() as f:
+        with path.open(encoding="utf-8") as f:
             all_words = f.readlines()
         all_words = [word.strip() for word in all_words if word.strip()]
         words = random.sample(all_words, 25)
