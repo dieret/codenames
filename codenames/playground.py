@@ -105,8 +105,15 @@ class Playground(object):
                 points[team] += tile.point_for(team)
         return points
 
-    def _get_all_tiles_clicked(self):
-        return len([tile for tile in self.tiles if tile.was_clicked]) == len([tile for tile in self.tiles if tile.type != "none"])
+    def _get_all_tiles_clicked(self, team: str) -> bool:
+        a = len([
+            tile for tile in self.tiles
+            if tile.type == team and tile.was_clicked
+        ])
+        b = len([
+            tile for tile in self.tiles if tile.type == team
+        ])
+        return a == b
 
     def _get_clicked_bombs(self):
         return [tile for tile in self.tiles if tile.type == "bomb" and tile.was_clicked]
@@ -122,13 +129,10 @@ class Playground(object):
                 winner = "blue"
             else:
                 winner = "red"
-        elif self._get_all_tiles_clicked():
-            score = self.get_score()
-            if score["red"] > score["blue"]:
-                winner = "red"
-            else:
-                winner = "blue"
-
+        elif self._get_all_tiles_clicked("red"):
+            winner = "red"
+        elif self._get_all_tiles_clicked("blue"):
+            winner = "blue"
         self._winner = winner
         return winner
 
