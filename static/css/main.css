@@ -1,27 +1,21 @@
 /* Global defaults */
+/* ========================================================================== */
 
 body {
     font-family: sans-serif;
 }
 
-.container {
-    /*max-width: 800px;*/
+
+/* Tiles & Playground */
+/* ========================================================================== */
+
+.playground {
+    margin: 5% 5% 5% 25%;
 }
 
-.badge.red {
-    background-color: #dd2800;
-    color: white;
-}
+/* Tiles */
+/* -------------------------------------------------------------------------- */
 
-.badge.blue {
-    background-color: #0042af;
-    color: white;
-}
-
-#message_holder {
-    height: 50%;
-    overflow-y: auto;
-}
 .tile {
   display: inline-block;
   background-color: #FFD480; /* brown background */
@@ -31,7 +25,6 @@ body {
   padding: 15px 32px;
   text-align: center;
   text-decoration: none;
-  /*display: inline;*/
   font-size: 16px;
   width:18%;
   height:15%;
@@ -40,6 +33,14 @@ body {
   box-sizing: border-box;
   position: relative;
 }
+
+.tile>a{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
 
 .unclicked.red {
   background-color: #fc9cb1; 
@@ -59,7 +60,6 @@ body {
   box-shadow: 3px 3px 2px grey;
 }
 
-
 .unclicked.bomb {
   background: black;
   color: white;
@@ -69,7 +69,6 @@ body {
   background: black;
   color: white;
 }
-
 
 .unclicked:hover {
   background-color: #FFE6B3;
@@ -127,6 +126,9 @@ body {
     cursor: pointer;
 }
 
+/* Sidebar */
+/* ========================================================================== */
+
 .sidebar {
   height: 100%;
   width: 20%;
@@ -140,6 +142,29 @@ body {
   padding-right: .75rem;
 }
 
+
+.badge.red {
+    background-color: #dd2800;
+    color: white;
+}
+
+.badge.blue {
+    background-color: #0042af;
+    color: white;
+}
+
+/* Chat */
+/* -------------------------------------------------------------------------- */
+
+
+#message_holder {
+    height: 50%;
+    overflow-y: auto;
+}
+
+/* Team info */
+/* -------------------------------------------------------------------------- */
+
 .team_info_red {
     display: inline-block;
     width: 50%;
@@ -149,28 +174,3 @@ body {
     display: inline-block;
     width: 50%;
 }    
-
-
-.playground {
-    margin-left: 25%;
-    margin-right: 5%;
-    margin-top: 5%;
-    margin-bottom: 5%;
-    /*padding-top: 20px;*/
-}
-
-
-/*.vertical-center {*/
-/*  margin: 0;*/
-/*  position: absolute;*/
-/*  top: 50%;*/
-/*  -ms-transform: translateY(-50%);*/
-/*  transform: translateY(-50%);*/
-/*}*/
-
-.tile>a{
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
