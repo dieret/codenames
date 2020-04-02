@@ -95,7 +95,7 @@
         'update_chat_messages',
         function( msg ) {
           if( typeof msg.message !== 'undefined' ) {
-            $( '#message_holder' ).html(msg.message);
+            $( 'div.message_holder' ).html(msg.message);
             msg_holder = document.getElementById("message_holder");
             msg_holder.scrollTo(0, msg_holder.scrollHeight)
           }
@@ -166,6 +166,14 @@
         }
       );
 
+      socket.on(
+        'force_reload_page',
+        function ( msg ) {
+          console.log("Forced to reload page");
+          location.reload(true);
+        }
+      );
+
       // Helper functions
       // ================
 
@@ -202,7 +210,7 @@
       <form action="" method="POST" id="login">
         <div class="form-group">
           <label for="user_input"></label>
-          <input id="user_input" type="text" class="form-control" placeholder="Your name" value="test"/>
+          <input id="user_input" type="text" class="form-control" placeholder="Your name" value=""/>
 
           <fieldset>
             <input type="radio" id="radio_team_red" name="radio_team" value="red" checked="checked">
@@ -233,12 +241,14 @@
       </div>
     </div>
 
-    <div class="container chat" style="height: 70%">
+    <div class="container chat" id="message_holder" style="height: 50%">
       <h2 class="label label-default">Chat</h2>
-      <div id="message_holder" class="message_holder" >
+      <div class="message_holder" >
         No message yet..
       </div>
+    </div>
 
+    <div style="height: 20%">
       <form action="" method="POST">
         <div class="form-group" id="chat_input_div" style="display: none;">
           <div>

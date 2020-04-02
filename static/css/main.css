@@ -18,7 +18,7 @@ body {
     color: white;
 }
 
-#message_holder {
+.container.chat {
     height: 70%;
     overflow-y: auto;
 }
