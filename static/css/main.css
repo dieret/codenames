@@ -162,6 +162,10 @@ body {
     overflow-y: auto;
 }
 
+#chat_controls_container {
+    height:20%;
+}
+
 /* Team info */
 /* -------------------------------------------------------------------------- */
 
@@ -174,3 +178,12 @@ body {
     display: inline-block;
     width: 50%;
 }    
+
+#team_info_container {
+    height:20%;
+    overflow-x: auto;
+}
+
+#team_overview_div {
+    padding-top: 20px;
+}
