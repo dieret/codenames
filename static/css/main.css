@@ -18,8 +18,8 @@ body {
     color: white;
 }
 
-.container.chat {
-    height: 70%;
+#message_holder {
+    height: 50%;
     overflow-y: auto;
 }
 .tile {
@@ -155,10 +155,6 @@ body {
     margin-top: 5%;
     margin-bottom: 5%;
     /*padding-top: 20px;*/
-}
-
-.message_holder {
-    max-height: 80%;
 }
 
 

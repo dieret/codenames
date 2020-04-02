@@ -95,7 +95,7 @@
         'update_chat_messages',
         function( msg ) {
           if( typeof msg.message !== 'undefined' ) {
-            $( 'div.message_holder' ).html(msg.message);
+            $( '#message_holder' ).html(msg.message);
             msg_holder = document.getElementById("message_holder");
             msg_holder.scrollTo(0, msg_holder.scrollHeight)
           }
@@ -237,9 +237,9 @@
       </div>
     </div>
 
-    <div class="container chat" id="message_holder" style="height: 50%">
+    <div class="container" id="message_holder_container">
       <h2 class="label label-default">Chat</h2>
-      <div class="message_holder" >
+      <div class="" id="message_holder" >
         No message yet..
       </div>
     </div>
