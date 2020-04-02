@@ -136,6 +136,8 @@ body {
   left: 0;
   overflow-x: hidden;
   padding-top: 20px;
+  padding-left: .75rem;
+  padding-right: .75rem;
 }
 
 .team_info_red {
