@@ -232,10 +232,6 @@
       <div id="login_message">Please login</div>
     </div>
 
-    <div id="game_control_div" class="container game_control"  style="display: none;">
-      <button id="restart_button"  class="btn btn-danger btn-block" onclick="restartGame()">Restart game</button>
-    </div>
-
     <div id="team_info_container" class="container" style="height:20%; overflow-x: auto">
       <div id="team_overview_div" class="container" style="padding-top: 20px;">
       </div>
@@ -248,7 +244,7 @@
       </div>
     </div>
 
-    <div style="height: 20%">
+    <div class="container" style="height: 20%">
       <form action="" method="POST">
         <div class="form-group" id="chat_input_div" style="display: none;">
           <div>
@@ -260,6 +256,10 @@
           </div>
         </div>
       </form>
+    </div>
+
+    <div id="game_control_div" class="container game_control"  style="display: none;">
+      <button id="restart_button"  class="btn btn-danger btn-block" onclick="restartGame()">Restart game</button>
     </div>
 
   </div>
