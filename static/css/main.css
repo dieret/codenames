@@ -158,12 +158,13 @@ body {
 
 
 #message_holder {
-    height: 50%;
+    /* 500px is the space reserved for other control elements */
+    height: calc(100vh - 500px);
     overflow-y: auto;
 }
 
 #chat_controls_container {
-    height:20%;
+    /*height:20%;*/
 }
 
 /* Team info */
@@ -180,7 +181,7 @@ body {
 }    
 
 #team_info_container {
-    height:20%;
+    /*height:20%;*/
     overflow-x: auto;
 }
 
