@@ -138,13 +138,12 @@ class Playground(object):
 
     @classmethod
     def generate_new(cls):
-        fields = []
-        
+
         # choose random words
         path = Path(__file__).parent.resolve().parent / "data" / "words.txt"
         with path.open(encoding="utf-8") as f:
             all_words = f.readlines()
-        all_words = [word.strip() for word in all_words if word.strip()]
+        all_words = set(word.strip() for word in all_words if word.strip())
         words = random.sample(all_words, 25)
 
         # set up card ownership
@@ -155,6 +154,6 @@ class Playground(object):
                 ["blue"] * blue_count + \
                 ["none"] * 7
         random.shuffle(types)
-        for i in range(25):
-            fields.append(PlaygroundTile(words[i], types[i], i))
-        return cls(fields)
+        return cls([
+            PlaygroundTile(words[i], types[i], i) for i in range(25)
+        ])
