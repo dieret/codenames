@@ -2,10 +2,10 @@
 
 ## Important
 
-* [ ] Upon game restart, all users should be logged out and redirected to the login page again. 
+* [x] Upon game restart, all users should be logged out and redirected to the login page again. 
 * [x] When game is won/lost, the control elements in the playground should freeze (really? could be fun to still be able to play around)
 * [ ] deploy to server (add wsgi script etc.)
-* [ ] Fix margins for char message button and submit button
+* [x] Fix margins for char message button and submit button
 
 ## Nice to have
 

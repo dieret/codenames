@@ -4,7 +4,6 @@
 import logging
 import random
 from typing import Optional, Union
-import urllib.parse
 
 # 3rd
 from flask import Flask, render_template
@@ -14,6 +13,7 @@ from flask_socketio import SocketIO, send, emit
 from codenames.users import Users, User
 from codenames.messages import Messages, Message
 from codenames.playground import Playground
+from codenames.util import handle_raw_input
 
 
 app = Flask(__name__)
@@ -61,7 +61,7 @@ def handle_user_login_event(json):
         success = False
     if "role" not in json or not json["role"]:
         success = False
-    username = urllib.parse.unquote(json["user"])
+    username = handle_raw_input(json["user"])
     return_json = {
         "user": json["user"],  # escaped unicode!
         "success": success
@@ -87,8 +87,8 @@ def handle_chat_message_received(json, methods=('GET', 'POST')):
     app.logger.info('Received chat message: ' + str(json))
     if json["user"].strip() and json["message"].strip():
         write_chat_message(
-            urllib.parse.unquote(json["message"]),
-            user=urllib.parse.unquote(json["user"])
+            handle_raw_input(json["message"]),
+            user=handle_raw_input(json["user"])
         )
 
 
@@ -148,7 +148,7 @@ def handle_tile_clicked_event(json):
     the playground. We check if the corresponding user triggers anything by
     clicking and if yes, ask all sessions to request a playground update. """
     app.logger.info("Tile clicked: " + str(json))
-    user = users[urllib.parse.unquote(json["user"])]
+    user = users[handle_raw_input(json["user"])]
     if playground.get_winner():
         print("Winner: ", playground.get_winner())
         return
@@ -211,7 +211,7 @@ def update_playground(json):
     different html than an 'explainer') and we only have the username if they
     make the request, not we.
     """
-    user = users[urllib.parse.unquote(json["user"])]
+    user = users[handle_raw_input(json["user"])]
     role = user.role
     app.logger.info(
         "Handing HTML for viewer role {role} to user {name}".format(
