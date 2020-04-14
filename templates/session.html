@@ -9,12 +9,14 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
 
     <script type="text/javascript">
       // Global variable storing our connection to the backend
       var socket = io.connect('http://' + document.domain + ':' + location.port);
 
       // Global variable storing our user name after succesful login
+      // All special characters are escaped here!
       var user = "invalid";
 
       socket.on(
@@ -35,7 +37,7 @@
               socket.emit(
                 'chat_message_received',
                 {
-                    message : user_input,
+                    message : encodeURIComponent(user_input),
                     user : user,
                 }
               );
@@ -59,7 +61,7 @@
               socket.emit(
                 'login',
                 {
-                    user : user_input,
+                    user : encodeURIComponent(user_input),
                     team: team,
                     role: role
                 }
@@ -148,12 +150,11 @@
             $( '#login_message' ).html(
                 `Welcome ${msg.user}`
             );
-            user = msg.user;
+            user = msg.user;  // Escaped special characters!
             // Trigger the backend to send us an update_playground event
             // together with the html
             socket.emit("request_update_playground", {user: user});
             document.getElementById("container_login").innerHTML="";
-//            set_disabled_login(true);
             set_disabled_controls("block");
           }
           else {
