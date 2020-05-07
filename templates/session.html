@@ -18,18 +18,26 @@
       // Global variable storing our user name after succesful login
       // All special characters are escaped here!
       var user = "invalid";
+      var room = 1;
 
       socket.on(
         'connect',
         function() {
           socket.emit( 'user_connect', {data: 'User Connected'} );
 
+          // add the options for room numbers
+           var select = $select = $("#room_number")
+           for (i=1;i<=10;i++){
+               select.append($('<option></option>').val(i).html(i));
+           }
+    
+
           /* Setting up events for the forms etc. of the page */
 
           // Set up hooks for the chat: Everytime submit is clicked, we pass on the
           // message to the backend
           $( 'form' ).on(
-            'submit',
+            'submit', 
             function( e ) {
               let messageField = $( '#chat_message_input' );
               e.preventDefault();
@@ -39,6 +47,7 @@
                 {
                     message : encodeURIComponent(user_input),
                     user : user,
+                    room: room
                 }
               );
               messageField.val( '' ).focus();
@@ -57,13 +66,15 @@
               let user_input = $( "#user_input" ).val();
               let team = $('input[name=radio_team]:checked', '#login').val();
               let role = $('input[name=radio_role]:checked', '#login').val();
+              room = $( '#room_number').val();
               console.debug(team);
               socket.emit(
                 'login',
                 {
                     user : encodeURIComponent(user_input),
                     team: team,
-                    role: role
+                    role: role, 
+                    room: room
                 }
               );
             }
@@ -78,13 +89,13 @@
       // If a tile is clicked, till the backend
       function tileClicked( index) {
           console.debug(index);
-          socket.emit( "tile_clicked", {user: user, index: index} )
+          socket.emit( "tile_clicked", {user: user, index: index, room: room} )
       }
     
       function restartGame(){
           if (confirm("Do you really want to restart the game?")) {
             console.debug('Game restart');
-            socket.emit( 'game_restart', {user: user} );
+            socket.emit( 'game_restart', {user: user, room: room} );
           }
       }
 
@@ -97,9 +108,11 @@
         'update_chat_messages',
         function( msg ) {
           if( typeof msg.message !== 'undefined' ) {
+           if (msg.room == room ) {
             $( '#message_holder' ).html(msg.message);
             msg_holder = document.getElementById("message_holder");
             msg_holder.scrollTo(0, msg_holder.scrollHeight)
+           }
           }
         }
       );
@@ -110,7 +123,7 @@
           "ask_all_sessions_to_request_update_playground",
           function (msg) {
               console.debug("Requeseting playground update");
-              socket.emit ("request_update_playground", {user: user})
+              socket.emit ("request_update_playground", {user: user, room: room})
           }
       );
 
@@ -121,7 +134,7 @@
           console.debug("Updating playground");
           if( typeof data["playground_html"] !== 'undefined' ) {
             $( '#playground_content' ).html(data["playground_html"]);
-          } 
+          } else { console.log("did not receive playground data");}
         }
       );
 
@@ -129,9 +142,11 @@
       socket.on(
           "update_teams",
           function (data) {
-              console.debug("Updating teams");
-              console.debug(data["team_overview_html"]);
-              $( '#team_overview_div').html(data["team_overview_html"])
+              if (data.room == room) {
+                console.debug("Updating teams");
+                console.debug(data["team_overview_html"]);
+                $( '#team_overview_div').html(data["team_overview_html"])
+              }
           }
       );
 
@@ -153,7 +168,7 @@
             user = msg.user;  // Escaped special characters!
             // Trigger the backend to send us an update_playground event
             // together with the html
-            socket.emit("request_update_playground", {user: user});
+            socket.emit("request_update_playground", {user: user, room: room});
             document.getElementById("container_login").innerHTML="";
             set_disabled_controls("block");
           }
@@ -170,8 +185,10 @@
       socket.on(
         'force_reload_page',
         function ( msg ) {
-          console.log("Forced to reload page");
-          location.reload(true);
+          if (msg.room == room) {
+            console.log("Forced to reload page");
+            location.reload(true);
+          }
         }
       );
 
@@ -219,13 +236,14 @@
             <input type="radio" id="radio_team_blue" name="radio_team" value="blue">
             <label for="radio_team_blue"> Team blue</label>
           </fieldset>
-
+         
           <fieldset>
             <input type="radio" id="radio_role_explainer" name="radio_role" value="explainer">
             <label for="radio_role_explainer"> Explainer</label>
             <input type="radio" id="radio_role_guesser" name="radio_role" value="guesser" checked="checked">
             <label for="radio_role_guesser"> Guesser</label>
           </fieldset>
+          <label for="room_number"> Room number: </label><select id="room_number"></select>
 
           <button id="login_button" type="submit" class="btn btn-success btn-block">Login</button>
         </div>
