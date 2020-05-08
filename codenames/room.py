@@ -9,7 +9,11 @@ class Room(object):
         self.restart()
 
     def restart(self):
-        self.playground = Playground.generate_new()
+        if self.number <= 5:
+            filename = "words.txt"
+        else:
+            filename = "words_en.txt"
+        self.playground = Playground.generate_new(filename=filename)
         self.users = Users()
         self.messages = Messages()
         self.messages.add_message(Message("You are in room {number}".format(number = self.number+1)))
