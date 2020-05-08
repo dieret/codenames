@@ -9,7 +9,7 @@ class Room(object):
         self.restart()
 
     def restart(self):
-        if self.number <= 5:
+        if self.number <= 4:
             filename = "words.txt"
         else:
             filename = "words_en.txt"
