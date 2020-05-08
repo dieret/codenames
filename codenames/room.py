@@ -2,6 +2,7 @@ from codenames.users import Users
 from codenames.messages import Messages, Message
 from codenames.playground import Playground
 
+
 class Room(object):
     def __init__(self, number):
         self.number = number
@@ -12,6 +13,3 @@ class Room(object):
         self.users = Users()
         self.messages = Messages()
         self.messages.add_message(Message("You are in room {number}".format(number = self.number+1)))
-
-
-    

@@ -7,12 +7,11 @@ from typing import Optional, Union
 
 # 3rd
 from flask import Flask, render_template
-from flask_socketio import SocketIO, send, emit
+from flask_socketio import SocketIO, emit
 
 # ours
-from codenames.users import Users, User
-from codenames.messages import Messages, Message
-from codenames.playground import Playground
+from codenames.users import User
+from codenames.messages import Message
 from codenames.util import handle_raw_input
 from codenames.room import Room
 
@@ -23,7 +22,6 @@ socketio = SocketIO(app)
 
 number_of_rooms = 10
 rooms = [Room(k) for k in range(number_of_rooms)]
-
 
 
 @app.route('/')
@@ -112,7 +110,11 @@ def reset_game(json, methods=('GET', 'POST')):
     socketio.emit('force_reload_page', {'room': room_number})
 
 
-def write_chat_message(message: str, room, user: Optional[Union[str, User]] = None) -> None:
+def write_chat_message(
+        message: str,
+        room: Room,
+        user: Optional[Union[str, User]] = None
+) -> None:
     """ Write a chat message to everyone. """
     if isinstance(user, str):
         user = room.users[user]
@@ -227,15 +229,21 @@ def update_playground(json, methods=('GET', 'POST')):
     )
     emit(
         'update_playground',
-        {"playground_html": room.playground.to_html(user_role=role), "room":room.number}
+        {
+            "playground_html": room.playground.to_html(user_role=role),
+            "room": room.number
+        }
     )
 
 
-def ask_all_sessions_to_request_playground_update(room):
+def ask_all_sessions_to_request_playground_update(room: Room):
     """ If `update_playground` has to be called by the backend, how do we force
     everyone to update the playground? We kindly ask them to submit an
     update themselves. """
-    socketio.emit("ask_all_sessions_to_request_update_playground", {"room":room.number})
+    socketio.emit(
+        "ask_all_sessions_to_request_update_playground",
+        {"room":room.number}
+    )
 
 
 if __name__ == '__main__':

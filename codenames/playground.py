@@ -137,10 +137,18 @@ class Playground(object):
         return winner
 
     @classmethod
-    def generate_new(cls):
+    def generate_new(cls, filename="words.txt"):
+        """
+
+        Args:
+            filename: Filename to load words from in the data directory
+
+        Returns:
+
+        """
 
         # choose random words
-        path = Path(__file__).parent.resolve().parent / "data" / "words.txt"
+        path = Path(__file__).parent.resolve().parent / "data" / filename
         with path.open(encoding="utf-8") as f:
             all_words = f.readlines()
         all_words = set(word.strip() for word in all_words if word.strip())
