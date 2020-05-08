@@ -59,7 +59,7 @@ def handle_user_login_event(json, methods=('GET', 'POST')):
         success = False
     if "role" not in json or not json["role"]:
         success = False
-    if "room" not in json or not json["room"]:
+    if "room" not in json:
         success = False
 
     username = handle_raw_input(json["user"])
