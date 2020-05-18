@@ -136,6 +136,15 @@ class Playground(object):
         self._winner = winner
         return winner
 
+    def get_first_team(self) -> str:
+        counts = {
+            team: len([tile for tile in self.tiles if tile.type == team])
+            for team in ["blue", "red"]
+        }
+        if counts["blue"] > counts["red"]:
+            return "blue"
+        return "red"
+
     @classmethod
     def generate_new(cls, filename="words.txt"):
         """
