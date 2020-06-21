@@ -4,6 +4,7 @@
 import logging
 import random
 from typing import Optional, Union
+import traceback
 
 # 3rd
 from flask import Flask, render_template
@@ -14,6 +15,8 @@ from codenames.users import User
 from codenames.messages import Message
 from codenames.util import handle_raw_input
 from codenames.room import Room
+from codenames.words import interpret_query
+from codenames.playground import Playground
 
 
 app = Flask(__name__)
@@ -120,6 +123,20 @@ def write_chat_message(
         user = room.users[user]
     room.messages.add_message(Message(message, user=user))
     update_chat_messages(room)
+    if message.startswith("/newwords "):
+        query = message.replace("/newwords ", "").strip()
+        try:
+            words = interpret_query(query)
+        except:
+            msg = "An exception occured.\n Traceback:"
+            msg += traceback.format_exc()
+            print(msg)
+            room.messages.add_message(Message(msg))
+            update_chat_messages(room)
+        else:
+            room.playground = Playground.generate_from_words(words)
+            ask_all_sessions_to_request_playground_update(room)
+
 
 
 def update_chat_messages(room):

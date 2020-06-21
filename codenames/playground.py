@@ -146,6 +146,20 @@ class Playground(object):
         return "red"
 
     @classmethod
+    def generate_from_words(cls, words):
+        # set up card ownership
+        blue_count = random.choice([8, 9])
+        red_count = 17 - blue_count
+        types = ["bomb"] + \
+                ["red"] * red_count + \
+                ["blue"] * blue_count + \
+                ["none"] * 7
+        random.shuffle(types)
+        return cls([
+            PlaygroundTile(words[i], types[i], i) for i in range(25)
+        ])
+
+    @classmethod
     def generate_new(cls, filename="words.txt"):
         """
 
@@ -163,14 +177,4 @@ class Playground(object):
         all_words = set(word.strip() for word in all_words if word.strip())
         words = random.sample(all_words, 25)
 
-        # set up card ownership
-        blue_count = random.choice([8, 9])
-        red_count = 17 - blue_count
-        types = ["bomb"] + \
-                ["red"] * red_count + \
-                ["blue"] * blue_count + \
-                ["none"] * 7
-        random.shuffle(types)
-        return cls([
-            PlaygroundTile(words[i], types[i], i) for i in range(25)
-        ])
+        return cls.generate_from_words(words)
