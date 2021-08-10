@@ -3,3 +3,4 @@ idea.txt
 **/.idea/**
 **/__pycache__/**
 *.pickle
+notebooks/**
