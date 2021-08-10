@@ -22,7 +22,6 @@ class PlaygroundTile:
 
         self.clicked_by = None  # type: Optional[User]
 
-
     @property
     def was_clicked(self) -> bool:
         return self.clicked_by is not None
@@ -61,19 +60,20 @@ class PlaygroundTile:
         return classes
 
     def to_html(self, user_role: str) -> str:
-        class_str = " ".join(self.get_tile_classes(user_role=user_role) + ["tile"])
+        class_str = " ".join(
+            self.get_tile_classes(user_role=user_role) + ["tile"]
+        )
         attributes = [
             f'id="tile{self.index}"',
             f'class="{class_str}"',
         ]
         if self.clicked_by is None:
-            attributes.append('onclick="tileClicked({index})"'.format(
-                index=self.index)
+            attributes.append(
+                'onclick="tileClicked({index})"'.format(index=self.index)
             )
         attribute_str = " ".join(attributes)
-        return '<span {attribute_str}><a>{content}</a></span>'.format(
-            attribute_str=attribute_str,
-            content=self.content
+        return "<span {attribute_str}><a>{content}</a></span>".format(
+            attribute_str=attribute_str, content=self.content
         )
 
 
@@ -96,27 +96,29 @@ class Playground:
         return out
 
     def get_score(self):
-        points = {
-            "red": 0,
-            "blue": 0
-        }
+        points = {"red": 0, "blue": 0}
         for tile in self.tiles:
             for team in ["red", "blue"]:
                 points[team] += tile.point_for(team)
         return points
 
     def _get_all_tiles_clicked(self, team: str) -> bool:
-        a = len([
-            tile for tile in self.tiles
-            if tile.type == team and tile.was_clicked
-        ])
-        b = len([
-            tile for tile in self.tiles if tile.type == team
-        ])
+        a = len(
+            [
+                tile
+                for tile in self.tiles
+                if tile.type == team and tile.was_clicked
+            ]
+        )
+        b = len([tile for tile in self.tiles if tile.type == team])
         return a == b
 
     def _get_clicked_bombs(self):
-        return [tile for tile in self.tiles if tile.type == "bomb" and tile.was_clicked]
+        return [
+            tile
+            for tile in self.tiles
+            if tile.type == "bomb" and tile.was_clicked
+        ]
 
     def get_winner(self) -> Optional[str]:
         if self._winner:
@@ -150,14 +152,14 @@ class Playground:
         # set up card ownership
         blue_count = random.choice([8, 9])
         red_count = 17 - blue_count
-        types = ["bomb"] + \
-                ["red"] * red_count + \
-                ["blue"] * blue_count + \
-                ["none"] * 7
+        types = (
+            ["bomb"]
+            + ["red"] * red_count
+            + ["blue"] * blue_count
+            + ["none"] * 7
+        )
         random.shuffle(types)
-        return cls([
-            PlaygroundTile(words[i], types[i], i) for i in range(25)
-        ])
+        return cls([PlaygroundTile(words[i], types[i], i) for i in range(25)])
 
     @classmethod
     def generate_new(cls, filename="words.txt"):

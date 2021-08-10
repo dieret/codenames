@@ -38,8 +38,7 @@ class Users:
 
     def get_by_team(self, team: str) -> List[User]:
         return [
-            user for user in self._username2user.values()
-            if user.team == team
+            user for user in self._username2user.values() if user.team == team
         ]
 
     def __getitem__(self, item: str):

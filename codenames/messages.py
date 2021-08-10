@@ -28,4 +28,3 @@ class Messages:
 
     def to_html(self):
         return "<br/>".join([m.to_html() for m in self.messages])
-

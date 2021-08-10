@@ -16,9 +16,9 @@ class Room:
         self.playground = Playground.generate_new(filename=filename)
         self.users = Users()
         self.messages = Messages()
-        self.messages.add_message(Message(
-            "You are in room {number}".format(number=self.number+1)
-        ))
-        self.messages.add_message(Message(
-            f"{self.playground.get_first_team()} starts."
-        ))
+        self.messages.add_message(
+            Message("You are in room {number}".format(number=self.number + 1))
+        )
+        self.messages.add_message(
+            Message(f"{self.playground.get_first_team()} starts.")
+        )

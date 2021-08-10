@@ -20,33 +20,31 @@ from codenames.playground import Playground
 
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'vnkdjnfjknfl1232#'
+app.config["SECRET_KEY"] = "vnkdjnfjknfl1232#"
 socketio = SocketIO(app)
 
 number_of_rooms = 10
 rooms = [Room(k) for k in range(number_of_rooms)]
 
 
-@app.route('/')
+@app.route("/")
 def sessions():
-    return render_template(
-        'session.html',
-    )
+    return render_template("session.html",)
 
 
-def messageReceived(methods=('GET', 'POST')):
-    print('message was received!!!')
+def messageReceived(methods=("GET", "POST")):
+    print("message was received!!!")
 
 
 @socketio.on("user_connect")
-def handle_user_connect(json, methods=('GET', 'POST')):
+def handle_user_connect(json, methods=("GET", "POST")):
     """ Gets triggered by the frontend if a user connected, i.e., the browser
     window was opened by someone (not necessarily a login yet). """
     app.logger.info("user connected: " + str(json))
 
 
 @socketio.on("login")
-def handle_user_login_event(json, methods=('GET', 'POST')):
+def handle_user_login_event(json, methods=("GET", "POST")):
     """ Gets triggered by the frontend if a user logs in. We trigger 'user_login'
     on the frontend of the client who made the request to tell whether the
     login was successful or not and update our user database and write a chat
@@ -64,59 +62,58 @@ def handle_user_login_event(json, methods=('GET', 'POST')):
         success = False
 
     username = handle_raw_input(json["user"])
-    return_json = {
-        "user": json["user"],  # escaped unicode!
-        "success": success
-    }
+    return_json = {"user": json["user"], "success": success}  # escaped unicode!
     app.logger.debug("Returning json: " + str(return_json))
-    emit('user_login', return_json, callback=messageReceived)
-    if success and 0 <= int(json["room"]) < number_of_rooms: 
+    emit("user_login", return_json, callback=messageReceived)
+    if success and 0 <= int(json["room"]) < number_of_rooms:
         room = rooms[int(json["room"])]
-        room.users.add_user(User(username, team=json["team"], role=json["role"]))
+        room.users.add_user(
+            User(username, team=json["team"], role=json["role"])
+        )
 
         # todo: Format team and role
         msg = "{user} has joined team {team} as {role}.".format(
             user=room.users[username].to_html(),
-            team=json['team'],
-            role=json['role'],
+            team=json["team"],
+            role=json["role"],
         )
         write_chat_message(msg, room)
         update_team_info(room)
 
-@socketio.on('chat_message_received')
-def handle_chat_message_received(json, methods=('GET', 'POST')):
+
+@socketio.on("chat_message_received")
+def handle_chat_message_received(json, methods=("GET", "POST")):
     """ Gets triggered by the frontend if a user submits a chat message.
     We add it to the list of chat messages and trigger a rebuild of the chat
     history in all clients."""
-    app.logger.info('Received chat message: ' + str(json))
+    app.logger.info("Received chat message: " + str(json))
     if json["user"].strip() and json["message"].strip():
         write_chat_message(
             handle_raw_input(json["message"]),
-            rooms[int(json["room"])],  
-            user=handle_raw_input(json["user"])
+            rooms[int(json["room"])],
+            user=handle_raw_input(json["user"]),
         )
 
 
-@socketio.on('game_restart')
-def reset_game(json, methods=('GET', 'POST')):
+@socketio.on("game_restart")
+def reset_game(json, methods=("GET", "POST")):
     room_number = int(json["room"])
-    app.logger.info(f'Restart game in room {room_number}')
+    app.logger.info(f"Restart game in room {room_number}")
     room = rooms[room_number]
     write_chat_message(
         "{user} has restarted the game".format(
-            user=room.users[json['user']].to_html()),
-            room 
+            user=room.users[json["user"]].to_html()
+        ),
+        room,
     )
     room.restart()
     # fixme: don't use private
     room.users._username2user = {}
-    socketio.emit('force_reload_page', {'room': room_number})
+    socketio.emit("force_reload_page", {"room": room_number})
 
 
 def write_chat_message(
-        message: str,
-        room: Room,
-        user: Optional[Union[str, User]] = None
+    message: str, room: Room, user: Optional[Union[str, User]] = None
 ) -> None:
     """ Write a chat message to everyone. """
     if isinstance(user, str):
@@ -138,11 +135,10 @@ def write_chat_message(
             ask_all_sessions_to_request_playground_update(room)
 
 
-
 def update_chat_messages(room):
     """ Triggers an update of the chat history box in all clients. """
     return_json = {"message": room.messages.to_html(), "room": room.number}
-    socketio.emit('update_chat_messages', return_json, callback=messageReceived)
+    socketio.emit("update_chat_messages", return_json, callback=messageReceived)
 
 
 def update_team_info(room):
@@ -150,10 +146,9 @@ def update_team_info(room):
 
     out = ""
     for team in ["red", "blue"]:
-        out += f"<span class=\"team_info_{team}\">"
+        out += f'<span class="team_info_{team}">'
         out += "<b>Team {team} ({score})</b>".format(
-            team=team.capitalize(),
-            score=room.playground.get_score()[team]
+            team=team.capitalize(), score=room.playground.get_score()[team]
         )
         out += "<div>"
         for member in room.users.get_by_team(team):
@@ -167,7 +162,7 @@ def update_team_info(room):
 
 
 @socketio.on("tile_clicked")
-def handle_tile_clicked_event(json, methods=('GET', 'POST')):
+def handle_tile_clicked_event(json, methods=("GET", "POST")):
     """ Gets triggered by the frontend if someone clicks on one of the tiles of
     the playground. We check if the corresponding user triggers anything by
     clicking and if yes, ask all sessions to request a playground update. """
@@ -180,11 +175,13 @@ def handle_tile_clicked_event(json, methods=('GET', 'POST')):
     if user.role == "guesser":
         tile = room.playground.tiles[json["index"]]
         tile.clicked_by = user
-        msg = '<span class="badge {team}">{name}</span> clicked ' \
-              '\'{content}\'. '.format(
-            team=user.team,
-            name=user.name.capitalize(),
-            content=tile.content
+        msg = (
+            '<span class="badge {team}">{name}</span> clicked '
+            "'{content}'. ".format(
+                team=user.team,
+                name=user.name.capitalize(),
+                content=tile.content,
+            )
         )
         write_chat_message(msg, room)
         msg = '<span class="badge badge-secondary">Bot</span> '
@@ -201,14 +198,14 @@ def handle_tile_clicked_event(json, methods=('GET', 'POST')):
                     "Booooo! ",
                     "Hope you're proud of yourself... &#128530; ",
                     "Really? I expected better of you. &#128550; ",
-                    "I'm pretty disappointed, but oh well. &#128580; "
+                    "I'm pretty disappointed, but oh well. &#128580; ",
                 ]
                 msg += random.choice(insults)
             else:
                 insults = [
                     "I'm speechless. &#129326;",
                     "I don't even have words for this. &#129326;",
-                    "A disgrace. &#129326;"
+                    "A disgrace. &#129326;",
                 ]
                 msg += random.choice(insults)
         write_chat_message(msg, room)
@@ -220,15 +217,17 @@ def handle_tile_clicked_event(json, methods=('GET', 'POST')):
         update_team_info(room)  # score was updated
         # todo: If bomb, the game should be over
     else:
-        msg = "Tile clicking ignored, because user {name} is not " \
-              "of role 'guesser', but of role '{role}'.".format(
-            name=user.name, role=user.role
+        msg = (
+            "Tile clicking ignored, because user {name} is not "
+            "of role 'guesser', but of role '{role}'.".format(
+                name=user.name, role=user.role
+            )
         )
         app.logger.info(msg)
 
 
 @socketio.on("request_update_playground")
-def update_playground(json, methods=('GET', 'POST')):
+def update_playground(json, methods=("GET", "POST")):
     """ Gets triggered by the frontend (not from the backend!) and sends back
     the html for the playground.
     The reason that this should only be triggered by the backend is that we
@@ -245,11 +244,11 @@ def update_playground(json, methods=('GET', 'POST')):
         )
     )
     emit(
-        'update_playground',
+        "update_playground",
         {
             "playground_html": room.playground.to_html(user_role=role),
-            "room": room.number
-        }
+            "room": room.number,
+        },
     )
 
 
@@ -258,11 +257,10 @@ def ask_all_sessions_to_request_playground_update(room: Room):
     everyone to update the playground? We kindly ask them to submit an
     update themselves. """
     socketio.emit(
-        "ask_all_sessions_to_request_update_playground",
-        {"room":room.number}
+        "ask_all_sessions_to_request_update_playground", {"room": room.number}
     )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.logger.setLevel(logging.DEBUG)
     socketio.run(app, debug=True)
