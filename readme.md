@@ -8,10 +8,20 @@ version which you can play [here](https://codenames.game/).
 
 A noteable other implementation is [KodeNames](https://github.com/ninjabunny/KodeNames).
 
+☠️ This server was never meant to be deployed in public so it probably has more security issues than we can count ☠️
+
 ## Features
 
 * Multiple rooms
 * Loading words from a wikipedia article instead of the default selection of words (german/english)
+
+## Local run
+
+Simply run
+
+```bash
+./main.py
+```
 
 ## Screenshots
 
