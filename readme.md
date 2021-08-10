@@ -1,12 +1,9 @@
-# Christmas Riddle 2019
+# Codenames
 
-## Installation
+Online version of a [Codenames](https://en.wikipedia.org/wiki/Codenames_(board_game)),
+a popular word gane running on a [flask server](https://en.wikipedia.org/wiki/Flask_(web_framework)).
 
-    mkvirtualenv xmas
-    workon xmas
-    pip install -r requiremens.txt
+Czech Games Edition have since released an official (and much more complete) online
+version which you can play [here](https://codenames.game/).
 
-## Start
-
-    ./main.py
-
+A noteable other implementation is [KodeNames](https://github.com/ninjabunny/KodeNames).
