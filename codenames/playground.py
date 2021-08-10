@@ -9,7 +9,7 @@ from pathlib import Path
 from codenames.users import User
 
 
-class PlaygroundTile(object):
+class PlaygroundTile:
     def __init__(self, content: str, tile_type: str, index: int):
         #: HTML content to display?
         self.content = content
@@ -63,8 +63,8 @@ class PlaygroundTile(object):
     def to_html(self, user_role: str) -> str:
         class_str = " ".join(self.get_tile_classes(user_role=user_role) + ["tile"])
         attributes = [
-            'id="tile{index}"'.format(index=self.index),
-            'class="{class_str}"'.format(class_str=class_str),
+            f'id="tile{self.index}"',
+            f'class="{class_str}"',
         ]
         if self.clicked_by is None:
             attributes.append('onclick="tileClicked({index})"'.format(
@@ -77,7 +77,7 @@ class PlaygroundTile(object):
         )
 
 
-class Playground(object):
+class Playground:
     def __init__(self, tiles: List[PlaygroundTile]):
         self.tiles = tiles
         #: Number of columns in which the tiles are presented
@@ -174,7 +174,7 @@ class Playground(object):
         path = Path(__file__).parent.resolve().parent / "data" / filename
         with path.open(encoding="utf-8") as f:
             all_words = f.readlines()
-        all_words = set(word.strip() for word in all_words if word.strip())
+        all_words = {word.strip() for word in all_words if word.strip()}
         words = random.sample(all_words, 25)
 
         return cls.generate_from_words(words)

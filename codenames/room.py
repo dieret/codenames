@@ -3,7 +3,7 @@ from codenames.messages import Messages, Message
 from codenames.playground import Playground
 
 
-class Room(object):
+class Room:
     def __init__(self, number):
         self.number = number
         self.restart()
@@ -20,5 +20,5 @@ class Room(object):
             "You are in room {number}".format(number=self.number+1)
         ))
         self.messages.add_message(Message(
-            "{team} starts.".format(team=self.playground.get_first_team())
+            f"{self.playground.get_first_team()} starts."
         ))

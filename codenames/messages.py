@@ -7,7 +7,7 @@ from typing import List, Optional
 from codenames.users import User
 
 
-class Message(object):
+class Message:
     def __init__(self, message: str, user: Optional[User] = None):
         self.user = user  # type: Optional[User]
         self.message = message
@@ -19,7 +19,7 @@ class Message(object):
             return self.message
 
 
-class Messages(object):
+class Messages:
     def __init__(self):
         self.messages = []  # type: List[Message]
 

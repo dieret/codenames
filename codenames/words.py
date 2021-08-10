@@ -6,8 +6,8 @@ from functools import lru_cache
 import traceback
 from pathlib import Path
 
-regex_non_word = re.compile("[^\s]*[^a-zA-Z\-\s]+[^\s]*")
-regex_replace_blank = re.compile("\s+")
+regex_non_word = re.compile(r"[^\s]*[^a-zA-Z\-\s]+[^\s]*")
+regex_replace_blank = re.compile(r"\s+")
 
 def test_regexps():
     assert not regex_non_word.fullmatch("asdf-As")
@@ -51,7 +51,7 @@ def counts2freq(counts):
 
 @lru_cache(10)
 def get_freqdict():
-    wordrx = re.compile("[A-Za-zäüöß]+[A-Za-zäüöß\-\' ]+")
+    wordrx = re.compile("[A-Za-zäüöß]+[A-Za-zäüöß\\-\' ]+")
     freqdict = collections.defaultdict(int)
     p = Path(__file__).resolve().parent.parent / "data" / "germandict.txt"
     with p.open() as wordl:
@@ -69,7 +69,7 @@ def get_freqdict():
 @lru_cache(10)
 def get_nouns():
     nouns = []
-    wordrx = re.compile("[A-Za-zäüöß]+[A-Za-zäüöß\-\' ]+")
+    wordrx = re.compile("[A-Za-zäüöß]+[A-Za-zäüöß\\-\' ]+")
     p = Path(__file__).resolve().parent.parent / "data" / "germandict.txt"
     with p.open() as wordl:
         for line in wordl:

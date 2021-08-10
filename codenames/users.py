@@ -4,7 +4,7 @@
 from typing import Dict, List
 
 
-class User(object):
+class User:
     def __init__(self, name: str, team: str, role: str):
         self.name = name
         #: Team: 'red' or 'blue'
@@ -20,7 +20,7 @@ class User(object):
         elif style == "user-role":
             inside = self.name.capitalize()
             if not self.role == "guesser":
-                inside += " ({role})".format(role=self.role)
+                inside += f" ({self.role})"
             out = '<span class="badge {team}">{inside}</span>'.format(
                 team=self.team, inside=inside
             )
@@ -29,7 +29,7 @@ class User(object):
             raise ValueError(style)
 
 
-class Users(object):
+class Users:
     def __init__(self):
         self._username2user = {}  # type: Dict[str, User]
 

@@ -100,7 +100,7 @@ def handle_chat_message_received(json, methods=('GET', 'POST')):
 @socketio.on('game_restart')
 def reset_game(json, methods=('GET', 'POST')):
     room_number = int(json["room"])
-    app.logger.info('Restart game in room {room_number}'.format(room_number=room_number))
+    app.logger.info(f'Restart game in room {room_number}')
     room = rooms[room_number]
     write_chat_message(
         "{user} has restarted the game".format(
@@ -150,7 +150,7 @@ def update_team_info(room):
 
     out = ""
     for team in ["red", "blue"]:
-        out += "<span class=\"team_info_{team}\">".format(team=team)
+        out += f"<span class=\"team_info_{team}\">"
         out += "<b>Team {team} ({score})</b>".format(
             team=team.capitalize(),
             score=room.playground.get_score()[team]
@@ -214,7 +214,7 @@ def handle_tile_clicked_event(json, methods=('GET', 'POST')):
         write_chat_message(msg, room)
         winner = room.playground.get_winner()
         if winner:
-            msg = "Team {winner} won! Congratulations!".format(winner=winner)
+            msg = f"Team {winner} won! Congratulations!"
             write_chat_message(msg, room)
         ask_all_sessions_to_request_playground_update(room)
         update_team_info(room)  # score was updated
