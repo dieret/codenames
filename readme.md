@@ -1,5 +1,9 @@
 # Codenames
 
+[![Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
+[![License](https://img.shields.io/github/license/dieret/codenames.svg)](https://github.com/dieret/codenames/blob/master/LICENSE.txt)
+[![PR welcome](https://img.shields.io/badge/PR-Welcome-%23FF8300.svg)](https://git-scm.com/book/en/v2/GitHub-Contributing-to-a-Project)
+
 Experimental/educational implementation of an online version of a [Codenames](https://en.wikipedia.org/wiki/Codenames_(board_game)),
 a popular word game.
 
