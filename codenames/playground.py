@@ -34,7 +34,7 @@ class PlaygroundTile:
 
     @property
     def correctly_clicked(self) -> Optional[bool]:
-        """ Returns true if was clicked correctly, false otherwise. If not
+        """Returns true if was clicked correctly, false otherwise. If not
         clicked at all, return None"""
         if not self.was_clicked:
             return None
@@ -153,10 +153,7 @@ class Playground:
         blue_count = random.choice([8, 9])
         red_count = 17 - blue_count
         types = (
-            ["bomb"]
-            + ["red"] * red_count
-            + ["blue"] * blue_count
-            + ["none"] * 7
+            ["bomb"] + ["red"] * red_count + ["blue"] * blue_count + ["none"] * 7
         )
         random.shuffle(types)
         return cls([PlaygroundTile(words[i], types[i], i) for i in range(25)])

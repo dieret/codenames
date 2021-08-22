@@ -15,7 +15,7 @@
       // Global variable storing our connection to the backend
       var socket = io.connect('http://' + document.domain + ':' + location.port);
 
-      // Global variable storing our user name after succesful login
+      // Global variable storing our user name after successful login
       // All special characters are escaped here!
       var user = "invalid";
       var room = 1;
@@ -33,14 +33,14 @@
            for (let i=6;i<=10;i++){
                select.append($('<option></option>').val(i).html(`${i} (Eng)`));
            }
-    
+
 
           /* Setting up events for the forms etc. of the page */
 
-          // Set up hooks for the chat: Everytime submit is clicked, we pass on the
+          // Set up hooks for the chat: Every time submit is clicked, we pass on the
           // message to the backend
           $( 'form' ).on(
-            'submit', 
+            'submit',
             function( e ) {
               let messageField = $( '#chat_message_input' );
               e.preventDefault();
@@ -76,7 +76,7 @@
                 {
                     user : encodeURIComponent(user_input),
                     team: team,
-                    role: role, 
+                    role: role,
                     room: room
                 }
               );
@@ -94,7 +94,7 @@
           console.debug(index);
           socket.emit( "tile_clicked", {user: user, index: index, room: room} )
       }
-    
+
       function restartGame(){
           if (confirm("Do you really want to restart the game?")) {
             console.debug('Game restart');
@@ -198,7 +198,7 @@
       // Helper functions
       // ================
 
-      // Disable or enable the login controls after a user has succesfully logged in
+      // Disable or enable the login controls after a user has successfully logged in
       // or out.
       function set_disabled_login( state ){
         $("#radio_team_red").prop("disabled", state);
@@ -239,7 +239,7 @@
             <input type="radio" id="radio_team_blue" name="radio_team" value="blue">
             <label for="radio_team_blue"> Team blue</label>
           </fieldset>
-         
+
           <fieldset>
             <input type="radio" id="radio_role_explainer" name="radio_role" value="explainer">
             <label for="radio_role_explainer"> Explainer</label>

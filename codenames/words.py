@@ -158,9 +158,7 @@ def interpret_query(query):
         search_term = search_term.strip()
         try:
             selections.append(
-                opinionated_selection(
-                    get_count_dict(get_wiki_text(search_term))
-                )
+                opinionated_selection(get_count_dict(get_wiki_text(search_term)))
             )
         except:
             print("Problem with '" + search_term + "'")
